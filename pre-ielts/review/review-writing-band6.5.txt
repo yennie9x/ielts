@@ -1,0 +1,242 @@
+# IELTS Writing review — Band 6.5
+
+**Goal:** natural, everyday English. Same 4-paragraph shape every time. Change only the topic words.
+
+**Bold** = collocation (Lexical 6.5)
+
+---
+
+## Shape (reuse for any topic)
+
+1. Intro — topic + 2 sides / 2 ways
+2. Body 1 — idea + why + result + one example
+3. Body 2 — other side or second way + why + result + one example
+4. End — my view in 1–2 sentences (no new idea)
+
+### Frames (change only the CAPS)
+
+**Intro — discuss both**  
+These days, many people / companies [DO X], while others [DO Y]. Both choices have **clear benefits**.
+
+**Intro — problem–solution**  
+These days, many people [HAVE PROBLEM] because of [CAUSE]. If this lasts for a long time, it can **affect** [WHO / WHAT]. The good news is that there are simple things we can do.
+
+**Body — one idea**  
+[GROUP] can usually [BENEFIT]. They [WHY], so [RESULT]. That is why [WHO] feel / think [VIEW]. For example, [ONE SHORT EXAMPLE].
+
+**Body — other side**  
+[OTHER GROUP] have advantages too. They [BENEFIT], so [RESULT]. They also [SECOND SMALL POINT].
+
+**Body — a solution**  
+The first step is to [SOLUTION 1]. If it comes from [CAUSE], we should [ACTION], instead of [BAD ACTION]. For instance, [EXAMPLE]. Once [SMALL RESULT], it becomes easier to [BIG RESULT].
+
+**End — opinion**  
+I believe [SIDE A] still **matters more**, especially if [WHEN]. But if [OTHER CASE], [SIDE B] can be **a good idea**.
+
+**End — solutions**  
+In the end, we all [PROBLEM] sometimes. If we [WAY 1] and [WAY 2], [PROBLEM] can become easier to handle.
+
+---
+
+## Paraphrase bank
+
+**Open**
+- These days / Today (pick ONE — not nowadays + today's)
+- many people
+- some ... while others ...
+- Both choices have **clear benefits**
+- There are simple things we can do
+
+**Next idea**
+- ... too / Also
+- The first step is to ...
+- More importantly
+- That is why ...
+- But / However
+
+**Result**
+- so ...
+- As a result, ...
+- This means ...
+- it becomes easier to ...
+
+**Example**
+- For example / For instance
+- someone who ... could ...
+
+**View**
+- I believe ...
+- still matters more
+- can be a good idea
+- In the end, ...
+
+**Do not use**  
+because of the following reasons · First of all · Last but not least · it is without doubt that · Evidence shows that · a growing number of · it is widely believed · furthermore · consequently · ASAP · ppl · newbies · figure out
+
+---
+
+## What gets the score
+
+You do not need rare words. You need the **right word + partner** and a few longer sentences.
+
+Aim: **6+ collocations** and **3+ grammar patterns** in every essay.
+
+**Collocation**
+- prefer people with / willing to hire / have clear benefits
+- start work almost immediately / need little training
+- save time and money / feel safer / know the job
+- accept lower pay / welcome new ideas / good with technology
+- matters more / fairly simple / a good idea
+- last for a long time / affect our health
+- find out where ... comes from / talk to a manager
+- a more realistic deadline / look after our body and mind
+- take care of ourselves / come back stronger
+- unwind after / in small amounts / turn into a real problem
+- struggle to stop / find it hard to focus
+- log ... out / in moderation / control our lives
+
+**Grammar**
+- while (two sides in one sentence)
+- If ..., it can / we should
+- so / That is why
+- instead of + -ing
+- someone who ... / a student who ...
+- Once ..., it becomes
+- When ..., they ... so ...
+- especially if / But if
+
+Do not chase Band 8 grammar. Wrong + fancy = Band 5.
+
+---
+
+## Sample A — Jobs (discuss both)
+
+**Type:** Writing · discuss both + opinion  
+**Shape:** intro → side A + example → side B → end
+
+These days, many companies **prefer people with** work experience, while others are **willing to hire** new graduates. Both choices have **clear benefits**.
+
+People with experience can usually **start work almost immediately**. They **need little training**, so the company can **save time and money**. That is why many managers **feel safer** hiring someone who already **knows the job**.
+
+New graduates have advantages too. They often **accept lower pay**, so they cost less. They **welcome new ideas**, and many of them are **good with technology**.
+
+I believe experience still **matters more**, especially if the job is difficult. But if the role is **fairly simple**, hiring a graduate can be **a good idea**.
+
+**Collocation**
+- prefer people with
+- willing to hire
+- have clear benefits
+- start work almost immediately
+- need little training
+- save time and money
+- feel safer / know the job
+- accept lower pay
+- welcome new ideas
+- good with technology
+- matters more / fairly simple / a good idea
+
+**Grammar**
+- while others ...
+- so ...
+- That is why ...
+- someone who ...
+- especially if ...
+- But if ...
+
+---
+
+## Sample B — Stress (problem–solution)
+
+**Type:** Writing · problem–solution  
+**Shape:** intro → find the cause + example → help ourselves → end
+
+These days, many people feel stressed because of work, family, or money. If this lasts for a long time, it can **affect our health**. The good news is that there are simple things we can do.
+
+The first step is to **find out where** the stress **comes from**. If it comes from work, we should **talk to a manager**, instead of staying quiet. For instance, someone who always brings work home could agree on **a more realistic deadline**.
+
+Helping ourselves is even more important. We cannot change everything overnight, but we can **look after our body and mind**.
+
+In the end, we all get stressed sometimes. If we find the cause and **take care of ourselves**, it becomes easier to **come back stronger**.
+
+**Collocation**
+- affect our health
+- find out where ... comes from
+- talk to a manager
+- a more realistic deadline
+- look after our body and mind
+- take care of ourselves
+- come back stronger
+
+**Grammar**
+- If this lasts for a long time, it can ...
+- If it comes from ...
+- instead of + -ing
+- someone who ...
+- If we ... it becomes easier to ...
+
+---
+
+## Sample C — Computer games (problem–solution)
+
+**Type:** Writing · problem–solution  
+**Shape:** intro → problem + example → solutions → end
+
+These days, many young people play games to **unwind after** study or work. This is fine **in small amounts**, but it often **turns into a real problem**.
+
+The main problem is overuse. When people play for hours every day, they **struggle to stop**, so they sleep badly and do worse at school. For example, a student who games until late will **find it hard to focus** the next morning.
+
+There are simple things we can do. Apps can **log players out** after a set time. More importantly, people need self-control — about 30 minutes to one hour a day is reasonable.
+
+In the end, playing games is fine if we play **in moderation**. We should not let games **control our lives**.
+
+**Collocation**
+- unwind after
+- in small amounts
+- turn into a real problem
+- struggle to stop
+- find it hard to focus
+- log players out
+- in moderation
+- control our lives
+
+**Grammar**
+- but ...
+- When ..., they ... so ...
+- a student who ...
+- if we ...
+
+---
+
+## Checklist
+
+**Before**
+- [ ] Task type is clear: opinion / discuss both + opinion / problem–solution
+- [ ] I used the 4-paragraph shape
+- [ ] 2 ideas only + 1 example each
+- [ ] 250+ words / about 40 minutes
+
+**Task**
+- [ ] Every part of the question is answered
+- [ ] Discuss both? BOTH sides + my opinion
+- [ ] Each idea has why + result
+- [ ] I did not list 5–6 points
+- [ ] Conclusion has no new idea
+
+**Language (Lexical 6.5)**
+- [ ] I only changed the topic words in the frames
+- [ ] I used the paraphrase bank, not template sentences
+- [ ] I used 6+ collocations (right word + partner)
+- [ ] No slang; no fancy word I cannot reuse
+- [ ] I did not repeat the same idea twice
+
+**Grammar (Grammar 6.5)**
+- [ ] Subject + verb in every sentence
+- [ ] affect / lose (not effect / loose)
+- [ ] take care of ourselves; devote ourselves to
+- [ ] a priority FOR; nowadays OR today's (not both)
+- [ ] I used 3+ patterns: while / If ... / so / That is why / instead of / someone who / Once ... / especially if
+- [ ] At least 4 sentences are longer than Subject + Verb + object
+
+**After (1 minute)**
+- [ ] I can read it out loud easily
+- [ ] I can copy this shape onto a new topic in 5 minutes

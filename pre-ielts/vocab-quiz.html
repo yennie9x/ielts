@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sept 20 — Vocab quiz</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --card: #fff;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #e7e5e4;
+      --ok: #166534;
+      --ok-bg: #dcfce7;
+      --bad: #991b1b;
+      --bad-bg: #fee2e2;
+      --accent: #1d4ed8;
+      --accent-bg: #eff6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    main {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+    h1 { font-size: 1.35rem; font-weight: 650; margin: 0 0 0.25rem; }
+    .sub { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.95rem; }
+    .progress {
+      height: 0.4rem;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    .bar { height: 100%; width: 0; background: var(--accent); }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.15rem 1.1rem;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      margin-bottom: 0.65rem;
+    }
+    .q { font-size: 1.2rem; font-weight: 650; margin: 0 0 1rem; line-height: 1.5; }
+    button.choice {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 0 0 0.5rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.choice:hover:not(:disabled) { border-color: var(--accent); }
+    button.choice.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+    button.choice.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+    button.choice:disabled { cursor: default; }
+    .explain {
+      margin-top: 0.75rem;
+      padding: 0.75rem 0.85rem;
+      background: #fafaf9;
+      border-radius: 8px;
+      color: var(--ink);
+      font-size: 0.95rem;
+    }
+    .explain .ipa { color: var(--muted); }
+    .explain .ex { margin: 0.4rem 0 0; color: var(--muted); }
+    .row { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+    .score { font-size: 1.5rem; font-weight: 700; margin: 0.4rem 0; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Sept 20 — Vocab quiz</h1>
+    <p class="sub">Câu hỏi tiếng Việt. Chọn cụm tiếng Anh đúng.</p>
+
+    <section id="quiz">
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="meta">
+        <span id="count"></span>
+        <span id="scoreline"></span>
+      </div>
+      <div class="card">
+        <div class="tag" id="tag"></div>
+        <p class="q" id="question"></p>
+        <div id="choices"></div>
+        <div class="explain" id="explain" hidden></div>
+        <div class="row">
+          <button class="btn" id="next" hidden>Câu tiếp</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="done" hidden>
+      <div class="card">
+        <div class="tag">Xong</div>
+        <p class="score" id="final"></p>
+        <p class="sub" id="missed"></p>
+        <div class="row">
+          <button class="btn" id="retry">Làm lại (xáo câu)</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const BANK = [
+      { tag: "Cụm", q: "Nổi tiếng về gì đó", a: "be known for", ipa: "/biː nəʊn fɔː/", meaning: "nổi tiếng vì điều gì", ex: "He is known for his kindness.", w: ["look down on", "fall behind"] },
+      { tag: "Cụm", q: "Kỳ vọng cao ở ai đó", a: "expect a lot from someone", ipa: "/ɪkˈspekt ə lɒt frəm/", meaning: "đòi hỏi / kỳ vọng nhiều ở ai", ex: "Her parents expect a lot from her.", w: ["look down on someone", "take something for granted"] },
+      { tag: "Cụm", q: "Đáp ứng / theo kịp kỳ vọng của ai đó", a: "live up to someone's expectations", ipa: "/lɪv ʌp tuː/", meaning: "làm đúng những gì người khác mong", ex: "He worked hard to live up to his parents' expectations.", w: ["look up to someone", "take something for granted"] },
+      { tag: "Cụm", q: "Đặt tiêu chuẩn cao cho ai đó", a: "set high standards for someone", ipa: "/set haɪ ˈstændədz/", meaning: "đòi hỏi ai đó phải làm rất tốt", ex: "That teacher sets high standards for her students.", w: ["fall behind", "voice their concerns"] },
+      { tag: "Cụm", q: "Theo kịp ai đó", a: "keep up with someone", ipa: "/kiːp ʌp wɪð/", meaning: "không bị tụt lại sau người khác", ex: "I study every day to keep up with my classmates.", w: ["look up to someone", "look down on someone"] },
+      { tag: "Cụm", q: "Bị tụt lại", a: "fall behind", ipa: "/fɔːl bɪˈhaɪnd/", meaning: "chậm hơn người khác", ex: "If you don't practise, you will fall behind in class.", w: ["aim high", "thrive"] },
+      { tag: "Cụm", q: "Ngưỡng mộ", a: "look up to", ipa: "/lʊk ʌp tuː/", meaning: "coi ai đó là hình mẫu", ex: "I look up to my older sister.", w: ["look down on", "take for granted"] },
+      { tag: "Cụm", q: "Coi thường", a: "look down on", ipa: "/lʊk daʊn ɒn/", meaning: "khinh / coi ai thấp hơn mình", ex: "Don't look down on people who earn less than you.", w: ["look up to", "keep up with"] },
+      { tag: "Cụm", q: "Coi điều gì là hiển nhiên", a: "take something for granted", ipa: "/teɪk fɔː ˈɡrɑːntɪd/", meaning: "không trân trọng vì nghĩ lúc nào cũng có", ex: "Some people take their parents' support for granted.", w: ["stick to it", "grab people's attention"] },
+      { tag: "Cụm", q: "Tấm gương", a: "role model", ipa: "/rəʊl ˈmɒdl/", meaning: "người mình muốn học theo", ex: "My coach is a real role model for me.", w: ["foodie", "algorithms"] },
+      { tag: "Cụm", q: "Phát triển mạnh", a: "thrive", ipa: "/θraɪv/", meaning: "lớn lên / làm tốt khi có điều kiện đúng", ex: "Children thrive when they feel supported.", w: ["procrastinate", "fall behind"] },
+      { tag: "Cụm", q: "Đặt mục tiêu cao", a: "aim high", ipa: "/eɪm haɪ/", meaning: "muốn đạt thứ lớn", ex: "She aims high and works hard every day.", w: ["fall behind", "cut down on screen time"] },
+      { tag: "Cụm", q: "Thu hút sự chú ý của người dùng", a: "grab people's attention", ipa: "/ɡræb ˈpiːplz əˈtenʃn/", meaning: "làm người ta phải nhìn / xem", ex: "Short videos are designed to grab people's attention.", w: ["set high standards", "stay in shape"] },
+      { tag: "Cụm", q: "Cập nhật suốt ngày", a: "updates 24/7", ipa: "/ˌʌpˈdeɪts ˌtwenti fɔː ˈsevn/", meaning: "tin mới cả ngày lẫn đêm", ex: "News apps send updates 24/7, so it is hard to switch off.", w: ["a savings account", "screen time"] },
+      { tag: "Cụm", q: "Dành quá nhiều thời gian nhìn màn hình", a: "too much screen time", ipa: "/skriːn taɪm/", meaning: "ngồi điện thoại / máy tính quá lâu", ex: "I need to cut down on screen time and follow a schedule.", w: ["fertility rate", "rush-hour traffic"] },
+      { tag: "Cụm", q: "Bày tỏ lo ngại", a: "voice their concerns", ipa: "/vɔɪs ðeə kənˈsɜːnz/", meaning: "nói ra điều mình lo", ex: "A lot of parents voice their concerns about social media.", w: ["push themselves hard", "try new food"] },
+      { tag: "Cụm", q: "Giấc mơ xa vời với nhiều người", a: "a distant dream for many people", ipa: "/ə ˈdɪstənt driːm/", meaning: "muốn lắm nhưng khó với tới", ex: "In big cities, owning an apartment is a distant dream for many people.", w: ["on average", "at the end of the day"] },
+      { tag: "Cụm", q: "Kẹt xe giờ cao điểm", a: "get stuck in rush-hour traffic", ipa: "/ɡet stʌk ɪn rʌʃ aʊə ˈtræfɪk/", meaning: "kẹt đường lúc mọi người đi làm", ex: "I left home early, but I still got stuck in rush-hour traffic.", w: ["become fluent", "live up to expectations"] },
+      { tag: "Cụm", q: "Tiện ích (nhà / khu ở)", a: "facilities", ipa: "/fəˈsɪlətiz/", meaning: "gym, hồ bơi, cửa hàng… trong khu", ex: "The apartment has good facilities, like a gym and a shop.", w: ["algorithms", "phenomenon"] },
+      { tag: "Cụm", q: "Hòa mình vào một nền văn hóa mới", a: "immerse myself in a new culture", ipa: "/ɪˈmɜːs maɪˈself/", meaning: "sống, ăn, gặp người bản xứ — không chỉ ở khách sạn", ex: "When I travel, I want to immerse myself in a new culture.", w: ["take it for granted", "fall behind"] },
+      { tag: "Cụm", q: "Có thể chi trả", a: "affordable", ipa: "/əˈfɔːdəbl/", meaning: "giá trong tầm với", ex: "We are looking for an affordable flat near the office.", w: ["unaffordable", "pushy"] },
+      { tag: "Cụm", q: "Giữ dáng / khỏe", a: "keep fit / stay in shape", ipa: "/kiːp fɪt/", meaning: "tập để cơ thể khỏe", ex: "She runs three times a week to keep fit.", w: ["fall behind", "procrastinate"] },
+      { tag: "Cụm", q: "Dễ tiếp cận cái gì", a: "have easy access to", ipa: "/hæv ˈiːzi ˈækses tuː/", meaning: "dễ dùng / dễ tới được", ex: "In the city I have easy access to good hospitals.", w: ["look down on", "take for granted"] },
+      { tag: "Writing", q: "Tỷ lệ sinh", a: "fertility rate / birth rate", ipa: "/fəˈtɪləti reɪt/", meaning: "số trẻ được sinh ra", ex: "The fertility rate is falling in many countries.", w: ["screen time", "rush-hour traffic"] },
+      { tag: "Writing", q: "Bất ổn tài chính", a: "financial insecurity", ipa: "/faɪˈnænʃl ˌɪnsɪˈkjʊərəti/", meaning: "không chắc có đủ tiền", ex: "Financial insecurity makes many couples wait to have children.", w: ["soft skills", "a distant dream"] },
+      { tag: "Writing", q: "Sự kiện nền tảng (lúc bắt đầu đời người lớn)", a: "cornerstone event", ipa: "/ˈkɔːnəstəʊn ɪˈvent/", meaning: "việc quan trọng làm nền, thường đến sớm", ex: "In the past, getting married was a cornerstone event.", w: ["capstone event", "screen time"] },
+      { tag: "Writing", q: "Sự kiện đỉnh (sau khi đã có việc, nhà, tiền)", a: "capstone event", ipa: "/ˈkæpstəʊn ɪˈvent/", meaning: "việc lớn làm sau khi đã đạt mục tiêu khác", ex: "These days marriage is more of a capstone event.", w: ["cornerstone event", "role model"] },
+      { tag: "Writing", q: "Cha mẹ hay thúc ép", a: "pushy parents", ipa: "/ˈpʊʃi ˈpeərənts/", meaning: "cha mẹ luôn đẩy con phải giỏi hơn", ex: "Pushy parents often set very high standards.", w: ["role model", "foodie"] },
+      { tag: "Writing", q: "Cố gắng để xuất sắc", a: "strive for excellence", ipa: "/straɪv fər ˈeksələns/", meaning: "không chỉ qua loa — muốn làm rất tốt", ex: "They want their children to strive for excellence.", w: ["take it for granted", "fall behind"] },
+      { tag: "Câu", q: "Không còn như vậy nữa", a: "that's not the case anymore", ipa: "/ðæts nɒt ðə keɪs ˌeniˈmɔː/", meaning: "trước khác, giờ khác", ex: "In the past people had many children, but that's not the case anymore.", w: ["they tend to do well", "times are tough"] },
+      { tag: "Câu", q: "Khi thời buổi khó khăn", a: "when times are tough", ipa: "/wen taɪmz ə tʌf/", meaning: "lúc cuộc sống vất vả", ex: "When times are tough, some people come out stronger.", w: ["to be more specific", "on average"] },
+      { tag: "Câu", q: "Chịu nhiều áp lực từ", a: "under a lot of pressure from", ipa: "/ˈʌndə ə lɒt əv ˈpreʃə/", meaning: "bị ai đó thúc / gây áp lực", ex: "A lot of young people are under a lot of pressure from their parents.", w: ["known for", "stuck in"] },
+      { tag: "Câu", q: "Cuối cùng thì", a: "at the end of the day", ipa: "/ət ði end əv ðə deɪ/", meaning: "xét cho cùng / điều quan trọng nhất là", ex: "At the end of the day, soft skills are what really matter.", w: ["on that basis", "right away"] },
+      { tag: "Speaking", q: "Trì hoãn / để việc đến phút chót", a: "procrastinate", ipa: "/prəʊˈkræstɪneɪt/", meaning: "cứ trì rồi mới làm", ex: "I tend to procrastinate, so I wait until the last minute.", w: ["stay focused", "thrive"] },
+      { tag: "Speaking", q: "Bám kế hoạch / làm đúng lịch", a: "stick to it", ipa: "/stɪk tuː ɪt/", meaning: "đã đề ra thì làm thật, không bỏ", ex: "I need a daily schedule — and I actually have to stick to it.", w: ["look down on it", "voice it"] }
+    ];
+
+    const quizEl = document.getElementById("quiz");
+    const doneEl = document.getElementById("done");
+    const choicesEl = document.getElementById("choices");
+    const explainEl = document.getElementById("explain");
+    const nextBtn = document.getElementById("next");
+
+    let order = [];
+    let i = 0;
+    let score = 0;
+    let missed = 0;
+    let locked = false;
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let n = a.length - 1; n > 0; n--) {
+        const j = Math.floor(Math.random() * (n + 1));
+        [a[n], a[j]] = [a[j], a[n]];
+      }
+      return a;
+    }
+
+    function start() {
+      order = shuffle(BANK);
+      i = 0;
+      score = 0;
+      missed = 0;
+      quizEl.hidden = false;
+      doneEl.hidden = true;
+      render();
+    }
+
+    function render() {
+      locked = false;
+      const item = order[i];
+      document.getElementById("tag").textContent = item.tag;
+      document.getElementById("question").textContent = item.q;
+      document.getElementById("count").textContent = `Câu ${i + 1}/${order.length}`;
+      document.getElementById("scoreline").textContent = `Đúng ${score}`;
+      document.getElementById("bar").style.width = `${(i / order.length) * 100}%`;
+      explainEl.hidden = true;
+      nextBtn.hidden = true;
+
+      const opts = shuffle([item.a, ...item.w]);
+      choicesEl.innerHTML = "";
+      opts.forEach((text) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.type = "button";
+        b.textContent = text;
+        b.addEventListener("click", () => pick(b, text, item));
+        choicesEl.appendChild(b);
+      });
+    }
+
+    function pick(btn, text, item) {
+      if (locked) return;
+      locked = true;
+      const buttons = [...choicesEl.querySelectorAll("button")];
+      buttons.forEach((b) => {
+        b.disabled = true;
+        if (b.textContent === item.a) b.classList.add("ok");
+      });
+      if (text === item.a) {
+        score += 1;
+        btn.classList.add("ok");
+      } else {
+        missed += 1;
+        btn.classList.add("bad");
+      }
+      document.getElementById("scoreline").textContent = `Đúng ${score}`;
+      explainEl.hidden = false;
+      explainEl.innerHTML =
+        `<strong>Answer:</strong> ${item.a} <span class="ipa">${item.ipa}</span>: ${item.meaning}.` +
+        `<p class="ex"><strong>Example:</strong> ${item.ex}</p>`;
+      nextBtn.hidden = false;
+      nextBtn.textContent = i + 1 === order.length ? "Xem điểm" : "Câu tiếp";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (i + 1 >= order.length) {
+        document.getElementById("bar").style.width = "100%";
+        quizEl.hidden = true;
+        doneEl.hidden = false;
+        document.getElementById("final").textContent = `${score}/${order.length}`;
+        document.getElementById("missed").textContent =
+          missed === 0 ? "Làm tốt." : `Sai ${missed} câu. Làm lại sẽ nhớ lâu hơn.`;
+        return;
+      }
+      i += 1;
+      render();
+    });
+
+    document.getElementById("retry").addEventListener("click", start);
+    start();
+  </script>
+</body>
+</html>
