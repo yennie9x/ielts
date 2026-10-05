@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sept 20 — Vocab quiz</title>
+  <title>Pre-IELTS — Vocab quiz</title>
   <style>
     :root {
       --bg: #f6f4ef;
@@ -32,7 +32,8 @@
       padding: 1.5rem 1rem 3rem;
     }
     h1 { font-size: 1.35rem; font-weight: 650; margin: 0 0 0.25rem; }
-    .sub { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.95rem; }
+    .sub { color: var(--muted); margin: 0 0 0.25rem; font-size: 0.95rem; }
+    .updated { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.8rem; }
     .progress {
       height: 0.4rem;
       background: var(--line);
@@ -48,6 +49,8 @@
       border-radius: 12px;
       padding: 1.15rem 1.1rem;
     }
+    .q-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .q-icon { font-size: 1.7rem; line-height: 1; }
     .tag {
       display: inline-block;
       font-size: 0.75rem;
@@ -55,26 +58,25 @@
       background: var(--accent-bg);
       padding: 0.15rem 0.5rem;
       border-radius: 99px;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0;
     }
     .q { font-size: 1.2rem; font-weight: 650; margin: 0 0 1rem; line-height: 1.5; }
-    button.choice {
-      display: block;
+    form.answer-form { margin: 0; }
+    .answer {
       width: 100%;
-      text-align: left;
-      margin: 0 0 0.5rem;
-      padding: 0.7rem 0.85rem;
+      padding: 0.75rem 0.85rem;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: #fff;
       color: inherit;
       font: inherit;
-      cursor: pointer;
+      font-size: 1.05rem;
     }
-    button.choice:hover:not(:disabled) { border-color: var(--accent); }
-    button.choice.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
-    button.choice.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
-    button.choice:disabled { cursor: default; }
+    .answer:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+    .answer.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+    .answer.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+    .answer:disabled { cursor: default; }
+    .answer-form .row { margin-top: 0.75rem; }
     .explain {
       margin-top: 0.75rem;
       padding: 0.75rem 0.85rem;
@@ -84,7 +86,12 @@
       font-size: 0.95rem;
     }
     .explain .ipa { color: var(--muted); }
-    .explain .ex { margin: 0.4rem 0 0; color: var(--muted); }
+    .explain .verdict { margin: 0 0 0.55rem; }
+    .explain .ans { margin: 0; }
+    .explain .ex-label { margin: 0.7rem 0 0.15rem; }
+    .explain .ex { margin: 0; color: var(--ink); }
+    .explain .ex-vi { margin: 0.15rem 0 0; color: var(--muted); }
+    .explain .mean { margin: 0.4rem 0 0; }
     .row { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
     .btn {
       border: 0;
@@ -96,14 +103,24 @@
       background: var(--accent);
       color: #fff;
     }
+    .btn.ghost {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
     .score { font-size: 1.5rem; font-weight: 700; margin: 0.4rem 0; }
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Sept 20 — Vocab quiz</h1>
-    <p class="sub">Câu hỏi tiếng Việt. Chọn cụm tiếng Anh đúng.</p>
+    <h1>Pre-IELTS — Vocab quiz</h1>
+    <p class="sub">Câu hỏi tiếng Việt. Gõ cụm tiếng Anh, rồi bấm Submit.</p>
+    <p class="updated">Cập nhật: 6 Oct 2026, 01:04</p>
 
     <section id="quiz">
       <div class="progress"><div class="bar" id="bar"></div></div>
@@ -112,13 +129,20 @@
         <span id="scoreline"></span>
       </div>
       <div class="card">
-        <div class="tag" id="tag"></div>
-        <p class="q" id="question"></p>
-        <div id="choices"></div>
-        <div class="explain" id="explain" hidden></div>
-        <div class="row">
-          <button class="btn" id="next" hidden>Câu tiếp</button>
+        <div class="q-head">
+          <span class="q-icon" id="qicon" aria-hidden="true"></span>
+          <div class="tag" id="tag"></div>
         </div>
+        <p class="q" id="question"></p>
+        <form class="answer-form" id="form">
+          <input class="answer" id="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Gõ đáp án tiếng Anh" />
+          <div class="row">
+            <button class="btn ghost" id="prev" type="button">Câu trước</button>
+            <button class="btn" id="submit" type="button">Submit</button>
+            <button class="btn" id="next" type="button" hidden>Câu tiếp</button>
+          </div>
+        </form>
+        <div class="explain" id="explain" hidden></div>
       </div>
     </section>
 
@@ -128,6 +152,7 @@
         <p class="score" id="final"></p>
         <p class="sub" id="missed"></p>
         <div class="row">
+          <button class="btn ghost" id="backLast" type="button">Câu trước</button>
           <button class="btn" id="retry">Làm lại (xáo câu)</button>
         </div>
       </div>
@@ -136,54 +161,198 @@
 
   <script>
     const BANK = [
-      { tag: "Cụm", q: "Nổi tiếng về gì đó", a: "be known for", ipa: "/biː nəʊn fɔː/", meaning: "nổi tiếng vì điều gì", ex: "He is known for his kindness.", w: ["look down on", "fall behind"] },
-      { tag: "Cụm", q: "Kỳ vọng cao ở ai đó", a: "expect a lot from someone", ipa: "/ɪkˈspekt ə lɒt frəm/", meaning: "đòi hỏi / kỳ vọng nhiều ở ai", ex: "Her parents expect a lot from her.", w: ["look down on someone", "take something for granted"] },
-      { tag: "Cụm", q: "Đáp ứng / theo kịp kỳ vọng của ai đó", a: "live up to someone's expectations", ipa: "/lɪv ʌp tuː/", meaning: "làm đúng những gì người khác mong", ex: "He worked hard to live up to his parents' expectations.", w: ["look up to someone", "take something for granted"] },
-      { tag: "Cụm", q: "Đặt tiêu chuẩn cao cho ai đó", a: "set high standards for someone", ipa: "/set haɪ ˈstændədz/", meaning: "đòi hỏi ai đó phải làm rất tốt", ex: "That teacher sets high standards for her students.", w: ["fall behind", "voice their concerns"] },
-      { tag: "Cụm", q: "Theo kịp ai đó", a: "keep up with someone", ipa: "/kiːp ʌp wɪð/", meaning: "không bị tụt lại sau người khác", ex: "I study every day to keep up with my classmates.", w: ["look up to someone", "look down on someone"] },
-      { tag: "Cụm", q: "Bị tụt lại", a: "fall behind", ipa: "/fɔːl bɪˈhaɪnd/", meaning: "chậm hơn người khác", ex: "If you don't practise, you will fall behind in class.", w: ["aim high", "thrive"] },
-      { tag: "Cụm", q: "Ngưỡng mộ", a: "look up to", ipa: "/lʊk ʌp tuː/", meaning: "coi ai đó là hình mẫu", ex: "I look up to my older sister.", w: ["look down on", "take for granted"] },
-      { tag: "Cụm", q: "Coi thường", a: "look down on", ipa: "/lʊk daʊn ɒn/", meaning: "khinh / coi ai thấp hơn mình", ex: "Don't look down on people who earn less than you.", w: ["look up to", "keep up with"] },
-      { tag: "Cụm", q: "Coi điều gì là hiển nhiên", a: "take something for granted", ipa: "/teɪk fɔː ˈɡrɑːntɪd/", meaning: "không trân trọng vì nghĩ lúc nào cũng có", ex: "Some people take their parents' support for granted.", w: ["stick to it", "grab people's attention"] },
-      { tag: "Cụm", q: "Tấm gương", a: "role model", ipa: "/rəʊl ˈmɒdl/", meaning: "người mình muốn học theo", ex: "My coach is a real role model for me.", w: ["foodie", "algorithms"] },
-      { tag: "Cụm", q: "Phát triển mạnh", a: "thrive", ipa: "/θraɪv/", meaning: "lớn lên / làm tốt khi có điều kiện đúng", ex: "Children thrive when they feel supported.", w: ["procrastinate", "fall behind"] },
-      { tag: "Cụm", q: "Đặt mục tiêu cao", a: "aim high", ipa: "/eɪm haɪ/", meaning: "muốn đạt thứ lớn", ex: "She aims high and works hard every day.", w: ["fall behind", "cut down on screen time"] },
-      { tag: "Cụm", q: "Thu hút sự chú ý của người dùng", a: "grab people's attention", ipa: "/ɡræb ˈpiːplz əˈtenʃn/", meaning: "làm người ta phải nhìn / xem", ex: "Short videos are designed to grab people's attention.", w: ["set high standards", "stay in shape"] },
-      { tag: "Cụm", q: "Cập nhật suốt ngày", a: "updates 24/7", ipa: "/ˌʌpˈdeɪts ˌtwenti fɔː ˈsevn/", meaning: "tin mới cả ngày lẫn đêm", ex: "News apps send updates 24/7, so it is hard to switch off.", w: ["a savings account", "screen time"] },
-      { tag: "Cụm", q: "Dành quá nhiều thời gian nhìn màn hình", a: "too much screen time", ipa: "/skriːn taɪm/", meaning: "ngồi điện thoại / máy tính quá lâu", ex: "I need to cut down on screen time and follow a schedule.", w: ["fertility rate", "rush-hour traffic"] },
-      { tag: "Cụm", q: "Bày tỏ lo ngại", a: "voice their concerns", ipa: "/vɔɪs ðeə kənˈsɜːnz/", meaning: "nói ra điều mình lo", ex: "A lot of parents voice their concerns about social media.", w: ["push themselves hard", "try new food"] },
-      { tag: "Cụm", q: "Giấc mơ xa vời với nhiều người", a: "a distant dream for many people", ipa: "/ə ˈdɪstənt driːm/", meaning: "muốn lắm nhưng khó với tới", ex: "In big cities, owning an apartment is a distant dream for many people.", w: ["on average", "at the end of the day"] },
-      { tag: "Cụm", q: "Kẹt xe giờ cao điểm", a: "get stuck in rush-hour traffic", ipa: "/ɡet stʌk ɪn rʌʃ aʊə ˈtræfɪk/", meaning: "kẹt đường lúc mọi người đi làm", ex: "I left home early, but I still got stuck in rush-hour traffic.", w: ["become fluent", "live up to expectations"] },
-      { tag: "Cụm", q: "Tiện ích (nhà / khu ở)", a: "facilities", ipa: "/fəˈsɪlətiz/", meaning: "gym, hồ bơi, cửa hàng… trong khu", ex: "The apartment has good facilities, like a gym and a shop.", w: ["algorithms", "phenomenon"] },
-      { tag: "Cụm", q: "Hòa mình vào một nền văn hóa mới", a: "immerse myself in a new culture", ipa: "/ɪˈmɜːs maɪˈself/", meaning: "sống, ăn, gặp người bản xứ — không chỉ ở khách sạn", ex: "When I travel, I want to immerse myself in a new culture.", w: ["take it for granted", "fall behind"] },
-      { tag: "Cụm", q: "Có thể chi trả", a: "affordable", ipa: "/əˈfɔːdəbl/", meaning: "giá trong tầm với", ex: "We are looking for an affordable flat near the office.", w: ["unaffordable", "pushy"] },
-      { tag: "Cụm", q: "Giữ dáng / khỏe", a: "keep fit / stay in shape", ipa: "/kiːp fɪt/", meaning: "tập để cơ thể khỏe", ex: "She runs three times a week to keep fit.", w: ["fall behind", "procrastinate"] },
-      { tag: "Cụm", q: "Dễ tiếp cận cái gì", a: "have easy access to", ipa: "/hæv ˈiːzi ˈækses tuː/", meaning: "dễ dùng / dễ tới được", ex: "In the city I have easy access to good hospitals.", w: ["look down on", "take for granted"] },
-      { tag: "Writing", q: "Tỷ lệ sinh", a: "fertility rate / birth rate", ipa: "/fəˈtɪləti reɪt/", meaning: "số trẻ được sinh ra", ex: "The fertility rate is falling in many countries.", w: ["screen time", "rush-hour traffic"] },
-      { tag: "Writing", q: "Bất ổn tài chính", a: "financial insecurity", ipa: "/faɪˈnænʃl ˌɪnsɪˈkjʊərəti/", meaning: "không chắc có đủ tiền", ex: "Financial insecurity makes many couples wait to have children.", w: ["soft skills", "a distant dream"] },
-      { tag: "Writing", q: "Sự kiện nền tảng (lúc bắt đầu đời người lớn)", a: "cornerstone event", ipa: "/ˈkɔːnəstəʊn ɪˈvent/", meaning: "việc quan trọng làm nền, thường đến sớm", ex: "In the past, getting married was a cornerstone event.", w: ["capstone event", "screen time"] },
-      { tag: "Writing", q: "Sự kiện đỉnh (sau khi đã có việc, nhà, tiền)", a: "capstone event", ipa: "/ˈkæpstəʊn ɪˈvent/", meaning: "việc lớn làm sau khi đã đạt mục tiêu khác", ex: "These days marriage is more of a capstone event.", w: ["cornerstone event", "role model"] },
-      { tag: "Writing", q: "Cha mẹ hay thúc ép", a: "pushy parents", ipa: "/ˈpʊʃi ˈpeərənts/", meaning: "cha mẹ luôn đẩy con phải giỏi hơn", ex: "Pushy parents often set very high standards.", w: ["role model", "foodie"] },
-      { tag: "Writing", q: "Cố gắng để xuất sắc", a: "strive for excellence", ipa: "/straɪv fər ˈeksələns/", meaning: "không chỉ qua loa — muốn làm rất tốt", ex: "They want their children to strive for excellence.", w: ["take it for granted", "fall behind"] },
-      { tag: "Câu", q: "Không còn như vậy nữa", a: "that's not the case anymore", ipa: "/ðæts nɒt ðə keɪs ˌeniˈmɔː/", meaning: "trước khác, giờ khác", ex: "In the past people had many children, but that's not the case anymore.", w: ["they tend to do well", "times are tough"] },
-      { tag: "Câu", q: "Khi thời buổi khó khăn", a: "when times are tough", ipa: "/wen taɪmz ə tʌf/", meaning: "lúc cuộc sống vất vả", ex: "When times are tough, some people come out stronger.", w: ["to be more specific", "on average"] },
-      { tag: "Câu", q: "Chịu nhiều áp lực từ", a: "under a lot of pressure from", ipa: "/ˈʌndə ə lɒt əv ˈpreʃə/", meaning: "bị ai đó thúc / gây áp lực", ex: "A lot of young people are under a lot of pressure from their parents.", w: ["known for", "stuck in"] },
-      { tag: "Câu", q: "Cuối cùng thì", a: "at the end of the day", ipa: "/ət ði end əv ðə deɪ/", meaning: "xét cho cùng / điều quan trọng nhất là", ex: "At the end of the day, soft skills are what really matter.", w: ["on that basis", "right away"] },
-      { tag: "Speaking", q: "Trì hoãn / để việc đến phút chót", a: "procrastinate", ipa: "/prəʊˈkræstɪneɪt/", meaning: "cứ trì rồi mới làm", ex: "I tend to procrastinate, so I wait until the last minute.", w: ["stay focused", "thrive"] },
-      { tag: "Speaking", q: "Bám kế hoạch / làm đúng lịch", a: "stick to it", ipa: "/stɪk tuː ɪt/", meaning: "đã đề ra thì làm thật, không bỏ", ex: "I need a daily schedule — and I actually have to stick to it.", w: ["look down on it", "voice it"] }
+      { tag: "Cụm", q: "Nổi tiếng về gì đó", a: "be known for", ipa: "/biː nəʊn fɔː/", meaning: "nổi tiếng vì điều gì", ex: "He is known for his kindness.", exVi: "Anh ấy nổi tiếng vì lòng tốt.", w: ["look down on", "fall behind"] },
+      { tag: "Cụm", q: "Kỳ vọng cao ở ai đó", a: "expect a lot from someone", ipa: "/ɪkˈspekt ə lɒt frəm/", meaning: "đòi hỏi / kỳ vọng nhiều ở ai", ex: "Her parents expect a lot from her.", exVi: "Bố mẹ cô ấy kỳ vọng rất nhiều ở cô ấy.", w: ["look down on someone", "take something for granted"] },
+      { tag: "Cụm", q: "Đáp ứng / theo kịp kỳ vọng của ai đó", a: "live up to someone's expectations", ipa: "/lɪv ʌp tuː/", meaning: "làm đúng những gì người khác mong", ex: "He worked hard to live up to his parents' expectations.", exVi: "Anh ấy học chăm để không phụ lòng bố mẹ.", w: ["look up to someone", "take something for granted"] },
+      { tag: "Cụm", q: "Đặt tiêu chuẩn cao cho ai đó", a: "set high standards for someone", ipa: "/set haɪ ˈstændədz/", meaning: "đòi hỏi ai đó phải làm rất tốt", ex: "That teacher sets high standards for her students.", exVi: "Cô giáo đó đặt tiêu chuẩn cao cho học sinh.", w: ["fall behind", "voice their concerns"] },
+      { tag: "Cụm", q: "Theo kịp ai đó", a: "keep up with someone", ipa: "/kiːp ʌp wɪð/", meaning: "không bị tụt lại sau người khác", ex: "I study every day to keep up with my classmates.", exVi: "Tôi học mỗi ngày để theo kịp bạn cùng lớp.", w: ["look up to someone", "look down on someone"] },
+      { tag: "Cụm", q: "Bị tụt lại", a: "fall behind", ipa: "/fɔːl bɪˈhaɪnd/", meaning: "chậm hơn người khác", ex: "If you don't practise, you will fall behind in class.", exVi: "Nếu không luyện tập, bạn sẽ bị tụt lại trong lớp.", w: ["aim high", "thrive"] },
+      { tag: "Cụm", q: "Ngưỡng mộ", a: "look up to", ipa: "/lʊk ʌp tuː/", meaning: "coi ai đó là hình mẫu", ex: "I look up to my older sister.", exVi: "Tôi ngưỡng mộ chị gái.", w: ["look down on", "take for granted"] },
+      { tag: "Cụm", q: "Coi thường", a: "look down on", ipa: "/lʊk daʊn ɒn/", meaning: "khinh / coi ai thấp hơn mình", ex: "Don't look down on people who earn less than you.", exVi: "Đừng coi thường người kiếm ít tiền hơn mình.", w: ["look up to", "keep up with"] },
+      { tag: "Cụm", q: "Coi điều gì là hiển nhiên", a: "take something for granted", ipa: "/teɪk fɔː ˈɡrɑːntɪd/", meaning: "không trân trọng vì nghĩ lúc nào cũng có", ex: "Some people take their parents' support for granted.", exVi: "Một số người coi sự hỗ trợ của bố mẹ là hiển nhiên.", w: ["stick to it", "grab people's attention"] },
+      { tag: "Cụm", q: "Tấm gương", a: "role model", ipa: "/rəʊl ˈmɒdl/", meaning: "người mình muốn học theo", ex: "My coach is a real role model for me.", exVi: "Huấn luyện viên là tấm gương thật sự với tôi.", w: ["foodie", "algorithms"] },
+      { tag: "Cụm", q: "Phát triển mạnh", a: "thrive", ipa: "/θraɪv/", meaning: "lớn lên / làm tốt khi có điều kiện đúng", ex: "Children thrive when they feel supported.", exVi: "Trẻ lớn khỏe khi cảm thấy được hỗ trợ.", w: ["procrastinate", "fall behind"] },
+      { tag: "Cụm", q: "Đặt mục tiêu cao", a: "aim high", ipa: "/eɪm haɪ/", meaning: "muốn đạt thứ lớn", ex: "She aims high and works hard every day.", exVi: "Cô ấy đặt mục tiêu cao và làm việc chăm mỗi ngày.", w: ["fall behind", "cut down on screen time"] },
+      { tag: "Cụm", q: "Thu hút sự chú ý của người dùng", a: "grab people's attention", ipa: "/ɡræb ˈpiːplz əˈtenʃn/", meaning: "làm người ta phải nhìn / xem", ex: "Short videos are designed to grab people's attention.", exVi: "Video ngắn được làm ra để thu hút sự chú ý.", w: ["set high standards", "stay in shape"] },
+      { tag: "Cụm", q: "Cập nhật suốt ngày", a: "updates 24/7", ipa: "/ˌʌpˈdeɪts ˌtwenti fɔː ˈsevn/", meaning: "tin mới cả ngày lẫn đêm", ex: "News apps send updates 24/7, so it is hard to switch off.", exVi: "App tin tức gửi thông báo suốt ngày, nên khó tắt máy.", w: ["a savings account", "screen time"] },
+      { tag: "Cụm", q: "Dành quá nhiều thời gian nhìn màn hình", a: "too much screen time", ipa: "/skriːn taɪm/", meaning: "ngồi điện thoại / máy tính quá lâu", ex: "I need to cut down on screen time and follow a schedule.", exVi: "Tôi cần bớt thời gian nhìn màn hình và theo lịch.", w: ["fertility rate", "rush-hour traffic"] },
+      { tag: "Cụm", q: "Bày tỏ lo ngại", a: "voice their concerns", ipa: "/vɔɪs ðeə kənˈsɜːnz/", meaning: "nói ra điều mình lo", ex: "A lot of parents voice their concerns about social media.", exVi: "Nhiều bố mẹ bày tỏ lo ngại về mạng xã hội.", w: ["push themselves hard", "try new food"] },
+      { tag: "Cụm", q: "Giấc mơ xa vời với nhiều người", a: "a distant dream for many people", ipa: "/ə ˈdɪstənt driːm/", meaning: "muốn lắm nhưng khó với tới", ex: "In big cities, owning an apartment is a distant dream for many people.", exVi: "Ở thành phố lớn, mua căn hộ là giấc mơ xa với nhiều người.", w: ["on average", "at the end of the day"] },
+      { tag: "Cụm", q: "Kẹt xe giờ cao điểm", a: "get stuck in rush-hour traffic", ipa: "/ɡet stʌk ɪn rʌʃ aʊə ˈtræfɪk/", meaning: "kẹt đường lúc mọi người đi làm", ex: "I left home early, but I still got stuck in rush-hour traffic.", exVi: "Tôi ra khỏi nhà sớm nhưng vẫn kẹt xe giờ cao điểm.", w: ["become fluent", "live up to expectations"] },
+      { tag: "Cụm", q: "Tiện ích (nhà / khu ở)", a: "facilities", ipa: "/fəˈsɪlətiz/", meaning: "gym, hồ bơi, cửa hàng… trong khu", ex: "The apartment has good facilities, like a gym and a shop.", exVi: "Căn hộ có tiện ích tốt, như phòng gym và cửa hàng.", w: ["algorithms", "phenomenon"] },
+      { tag: "Cụm", q: "Hòa mình vào một nền văn hóa mới", a: "immerse myself in a new culture", ipa: "/ɪˈmɜːs maɪˈself/", meaning: "sống, ăn, gặp người bản xứ — không chỉ ở khách sạn", ex: "When I travel, I want to immerse myself in a new culture.", exVi: "Khi đi du lịch, tôi muốn hòa mình vào văn hóa mới.", w: ["take it for granted", "fall behind"] },
+      { tag: "Cụm", q: "Có thể chi trả", a: "affordable", ipa: "/əˈfɔːdəbl/", meaning: "giá trong tầm với", ex: "We are looking for an affordable flat near the office.", exVi: "Chúng tôi đang tìm căn hộ giá vừa gần chỗ làm.", w: ["unaffordable", "pushy"] },
+      { tag: "Cụm", q: "Giữ dáng / khỏe", a: "keep fit / stay in shape", ipa: "/kiːp fɪt/", meaning: "tập để cơ thể khỏe", ex: "She runs three times a week to keep fit.", exVi: "Cô ấy chạy bộ ba lần một tuần để giữ dáng.", w: ["fall behind", "procrastinate"] },
+      { tag: "Cụm", q: "Dễ tiếp cận cái gì", a: "have easy access to", ipa: "/hæv ˈiːzi ˈækses tuː/", meaning: "dễ dùng / dễ tới được", ex: "In the city I have easy access to good hospitals.", exVi: "Ở thành phố tôi dễ tới bệnh viện tốt.", w: ["look down on", "take for granted"] },
+      { tag: "Writing", q: "Tỷ lệ sinh", a: "fertility rate / birth rate", ipa: "/fəˈtɪləti reɪt/", meaning: "số trẻ được sinh ra", ex: "The fertility rate is falling in many countries.", exVi: "Tỷ lệ sinh đang giảm ở nhiều nước.", w: ["screen time", "rush-hour traffic"] },
+      { tag: "Writing", q: "Bất ổn tài chính", a: "financial insecurity", ipa: "/faɪˈnænʃl ˌɪnsɪˈkjʊərəti/", meaning: "không chắc có đủ tiền", ex: "Financial insecurity makes many couples wait to have children.", exVi: "Bất ổn tiền bạc khiến nhiều cặp đôi trì hoãn sinh con.", w: ["soft skills", "a distant dream"] },
+      { tag: "Writing", q: "Sự kiện nền tảng (lúc bắt đầu đời người lớn)", a: "cornerstone event", ipa: "/ˈkɔːnəstəʊn ɪˈvent/", meaning: "việc quan trọng làm nền, thường đến sớm", ex: "In the past, getting married was a cornerstone event.", exVi: "Ngày xưa, kết hôn là sự kiện nền tảng lúc mới lớn.", w: ["capstone event", "screen time"] },
+      { tag: "Writing", q: "Sự kiện đỉnh (sau khi đã có việc, nhà, tiền)", a: "capstone event", ipa: "/ˈkæpstəʊn ɪˈvent/", meaning: "việc lớn làm sau khi đã đạt mục tiêu khác", ex: "These days marriage is more of a capstone event.", exVi: "Bây giờ kết hôn thường là việc làm sau khi đã ổn định.", w: ["cornerstone event", "role model"] },
+      { tag: "Writing", q: "Cha mẹ hay thúc ép", a: "pushy parents", ipa: "/ˈpʊʃi ˈpeərənts/", meaning: "cha mẹ luôn đẩy con phải giỏi hơn", ex: "Pushy parents often set very high standards.", exVi: "Bố mẹ hay thúc ép thường đặt tiêu chuẩn rất cao.", w: ["role model", "foodie"] },
+      { tag: "Writing", q: "Cố gắng để xuất sắc", a: "strive for excellence", ipa: "/straɪv fər ˈeksələns/", meaning: "không chỉ qua loa — muốn làm rất tốt", ex: "They want their children to strive for excellence.", exVi: "Họ muốn con cố gắng để xuất sắc.", w: ["take it for granted", "fall behind"] },
+      { tag: "Câu", q: "Không còn như vậy nữa", a: "that's not the case anymore", ipa: "/ðæts nɒt ðə keɪs ˌeniˈmɔː/", meaning: "trước khác, giờ khác", ex: "In the past people had many children, but that's not the case anymore.", exVi: "Ngày xưa người ta sinh nhiều con, nhưng giờ không còn vậy.", w: ["they tend to do well", "times are tough"] },
+      { tag: "Câu", q: "Khi thời buổi khó khăn", a: "when times are tough", ipa: "/wen taɪmz ə tʌf/", meaning: "lúc cuộc sống vất vả", ex: "When times are tough, some people come out stronger.", exVi: "Khi thời buổi khó khăn, một số người lại mạnh hơn.", w: ["to be more specific", "on average"] },
+      { tag: "Câu", q: "Chịu nhiều áp lực từ", a: "under a lot of pressure from", ipa: "/ˈʌndə ə lɒt əv ˈpreʃə/", meaning: "bị ai đó thúc / gây áp lực", ex: "A lot of young people are under a lot of pressure from their parents.", exVi: "Nhiều bạn trẻ chịu nhiều áp lực từ bố mẹ.", w: ["known for", "stuck in"] },
+      { tag: "Câu", q: "Cuối cùng thì", a: "at the end of the day", ipa: "/ət ði end əv ðə deɪ/", meaning: "xét cho cùng / điều quan trọng nhất là", ex: "At the end of the day, soft skills are what really matter.", exVi: "Xét cho cùng, kỹ năng mềm mới thật sự quan trọng.", w: ["on that basis", "right away"] },
+      { tag: "Speaking", q: "Trì hoãn / để việc đến phút chót", a: "procrastinate", ipa: "/prəʊˈkræstɪneɪt/", meaning: "cứ trì rồi mới làm", ex: "I tend to procrastinate, so I wait until the last minute.", exVi: "Tôi hay trì hoãn, nên cứ để đến phút chót.", w: ["stay focused", "thrive"] },
+      { tag: "Speaking", q: "Bám kế hoạch / làm đúng lịch", a: "stick to it", ipa: "/stɪk tuː ɪt/", meaning: "đã đề ra thì làm thật, không bỏ", ex: "I need a daily schedule — and I actually have to stick to it.", exVi: "Tôi cần lịch mỗi ngày — và phải bám đúng lịch đó.", w: ["look down on it", "voice it"] },
+
+      { tag: "Hotel", q: "Đặt phòng", a: "book a room / reserve a room / make a reservation", ipa: "/bʊk ə ruːm/", meaning: "đặt phòng khách sạn", ex: "I'd like to book a room for two nights.", exVi: "Tôi muốn đặt phòng hai đêm." },
+      { tag: "Hotel", q: "Đã được đặt trước", a: "reserved", ipa: "/rɪˈzɜːvd/", meaning: "phòng đã có người đặt", ex: "Sorry, that table is reserved.", exVi: "Xin lỗi, bàn đó đã được đặt trước." },
+      { tag: "Hotel", q: "Quầy lễ tân / nhân viên lễ tân", a: "front desk / receptionist", ipa: "/frʌnt desk/", meaning: "nơi / người nhận phòng", ex: "Please leave your key at the front desk.", exVi: "Làm ơn để chìa khóa ở quầy lễ tân." },
+      { tag: "Hotel", q: "Họ tính bạn bao nhiêu tiền?", a: "charge you for", ipa: "/tʃɑːdʒ juː fɔː/", meaning: "tính phí cho cái gì", ex: "How much did they charge you for the room?", exVi: "Họ tính bạn bao nhiêu tiền phòng?" },
+      { tag: "Hotel", q: "Miễn phí", a: "free of charge", ipa: "/friː əv tʃɑːdʒ/", meaning: "không phải trả tiền", ex: "This service is free of charge.", exVi: "Dịch vụ này miễn phí." },
+      { tag: "Hotel", q: "Phụ trách / chịu trách nhiệm việc gì", a: "be in charge of / take charge of", ipa: "/bi ɪn tʃɑːdʒ əv/", meaning: "là người chịu trách nhiệm", ex: "I will be in charge of this class next semester.", exVi: "Tôi sẽ phụ trách lớp này học kỳ tới." },
+      { tag: "Time", q: "Giờ cao điểm", a: "peak time / rush hour", ipa: "/piːk taɪm/", meaning: "lúc đông nhất, thường lúc đi làm", ex: "Don't drive at rush hour if you can avoid it.", exVi: "Đừng lái xe giờ cao điểm nếu tránh được." },
+      { tag: "Time", q: "Mùa cao điểm", a: "high season / peak season", ipa: "/haɪ ˈsiːzn/", meaning: "mùa đông khách / giá cao", ex: "Flights cost more in peak season.", exVi: "Vé máy bay đắt hơn vào mùa cao điểm." },
+      { tag: "Time", q: "Mùa thấp điểm", a: "off season / off-peak season", ipa: "/ɒf ˈsiːzn/", meaning: "mùa vắng khách", ex: "Hotels are cheaper in the off season.", exVi: "Khách sạn rẻ hơn vào mùa thấp điểm." },
+      { tag: "Time", q: "Không biết điều gì đang chờ phía trước", a: "what lies ahead / what the future holds", ipa: "/wɒt laɪz əˈhed/", meaning: "không biết chuyện gì sẽ tới", ex: "We need to prepare because we don't know what lies ahead.", exVi: "Chúng ta cần chuẩn bị vì không biết chuyện gì đang chờ phía trước." },
+      { tag: "Family", q: "Tận hưởng thời gian chất lượng bên gia đình", a: "quality family time", ipa: "/ˈkwɒləti ˈfæməli taɪm/", meaning: "thời gian thật sự ở bên nhau", ex: "We try to enjoy some quality family time at the weekend.", exVi: "Cuối tuần chúng tôi cố dành thời gian chất lượng bên gia đình." },
+      { tag: "Family", q: "Buổi họp mặt gia đình", a: "family gatherings", ipa: "/ˈfæməli ˈɡæðərɪŋz/", meaning: "cả nhà tụ họp", ex: "Family gatherings help strengthen family bonds.", exVi: "Những buổi họp mặt giúp gắn kết tình cảm gia đình." },
+      { tag: "Family", q: "Gắn kết tình cảm gia đình", a: "strengthen family bonds", ipa: "/ˈstreŋθən ˈfæməli bɒndz/", meaning: "làm mối quan hệ gia đình chặt hơn", ex: "We cook together to strengthen family bonds.", exVi: "Chúng tôi nấu ăn cùng nhau để gắn kết hơn." },
+      { tag: "Family", q: "Đoàn tụ gia đình", a: "family reunion", ipa: "/ˈfæməli riːˈjuːniən/", meaning: "họp mặt sau thời gian xa cách", ex: "We're having a family reunion this Tet.", exVi: "Tết này chúng tôi đoàn tụ gia đình." },
+      { tag: "Travel", q: "Người có tinh thần phiêu lưu", a: "a spirit of adventure", ipa: "/ə ˈspɪrɪt əv ədˈventʃə/", meaning: "thích khám phá, dám thử cái mới", ex: "She is a person with a spirit of adventure.", exVi: "Cô ấy là người có tinh thần phiêu lưu." },
+      { tag: "Travel", q: "Đặt chân đến vùng đất mới", a: "set foot on new lands", ipa: "/set fʊt ɒn njuː lændz/", meaning: "đến một nơi chưa từng tới", ex: "I want to set foot on new lands and try local food.", exVi: "Tôi muốn đặt chân đến vùng đất mới và thử đồ ăn địa phương." },
+      { tag: "Travel", q: "Khám phá kỳ quan thiên nhiên", a: "discover the wonders of nature", ipa: "/dɪsˈkʌvə ðə ˈwʌndəz əv ˈneɪtʃə/", meaning: "ngắm cảnh đẹp của thiên nhiên", ex: "Da Lat is an ideal place to discover the wonders of nature.", exVi: "Đà Lạt là nơi lý tưởng để khám phá kỳ quan thiên nhiên." },
+      { tag: "Travel", q: "Một trong bảy kỳ quan thế giới", a: "the seven wonders of the world", ipa: "/ðə ˈsevn ˈwʌndəz/", meaning: "bảy công trình / cảnh nổi tiếng nhất", ex: "Ha Long Bay is often called one of the seven wonders of the world.", exVi: "Vịnh Hạ Long thường được gọi là một trong bảy kỳ quan thế giới." },
+      { tag: "Travel", q: "Dành dụm phòng khi khó", a: "save for a rainy day", ipa: "/seɪv fɔːr ə ˈreɪni deɪ/", meaning: "để dành tiền lúc cần", ex: "I try to save for a rainy day every month.", exVi: "Mỗi tháng tôi cố để dành tiền phòng khi khó." },
+      { tag: "City", q: "Nhịp sống", a: "the pace of life", ipa: "/ðə peɪs əv laɪf/", meaning: "nhịp độ cuộc sống nhanh hay chậm", ex: "The pace of life in Ho Chi Minh City is really fast.", exVi: "Nhịp sống ở TP. Hồ Chí Minh rất nhanh." },
+      { tag: "City", q: "Chi phí sinh hoạt cao", a: "the high cost of living", ipa: "/ðə haɪ kɒst əv ˈlɪvɪŋ/", meaning: "sống ở đó tốn nhiều tiền", ex: "The high cost of living makes city life hard for many families.", exVi: "Chi phí sinh hoạt cao khiến đời sống thành phố khó với nhiều gia đình." },
+      { tag: "City", q: "Kẹt xe nghiêm trọng", a: "massive traffic congestion", ipa: "/ˈmæsɪv ˈtræfɪk kənˈdʒestʃən/", meaning: "kẹt đường nặng", ex: "Massive traffic congestion is a daily problem here.", exVi: "Kẹt xe nặng là chuyện mỗi ngày ở đây." },
+      { tag: "City", q: "Kiệt quệ về cảm xúc", a: "emotionally taxing", ipa: "/ɪˈməʊʃənəli ˈtæksɪŋ/", meaning: "khiến người ta mệt mỏi, căng thẳng", ex: "These problems can make city life emotionally taxing.", exVi: "Những vấn đề này có thể khiến cuộc sống thành thị kiệt sức về cảm xúc." },
+      { tag: "City", q: "Khó khăn về tiền bạc", a: "struggle financially", ipa: "/ˈstrʌɡl faɪˈnænʃəli/", meaning: "không đủ tiền, phải chật vật", ex: "People without a good education might struggle financially.", exVi: "Người không có học vấn tốt có thể gặp khó về tiền bạc." },
+      { tag: "City", q: "Áp lực rất lớn trong công việc", a: "immense pressure at work", ipa: "/ɪˈmens ˈpreʃə ət wɜːk/", meaning: "công việc đè nặng", ex: "Some people feel stressed because of immense pressure at work.", exVi: "Một số người căng thẳng vì áp lực rất lớn lúc làm." },
+      { tag: "City", q: "Kiếm vừa đủ sống", a: "make ends meet", ipa: "/meɪk endz miːt/", meaning: "lương vừa đủ chi tiêu", ex: "Many workers cannot make ends meet with their salary.", exVi: "Nhiều người không đủ sống với lương." },
+      { tag: "City", q: "Sở hữu nhà", a: "home ownership", ipa: "/həʊm ˈəʊnəʃɪp/", meaning: "có nhà của mình", ex: "Home ownership has become a distant dream for many families.", exVi: "Sở hữu nhà đã thành giấc mơ xa với nhiều gia đình." },
+      { tag: "City", q: "Người dân thành phố", a: "city dwellers", ipa: "/ˈsɪti ˌdweləz/", meaning: "người sống ở thành phố", ex: "The fast pace of life makes many city dwellers tired.", exVi: "Nhịp sống nhanh khiến nhiều người thành phố mệt." },
+
+      { tag: "Nature", q: "Hạn chế (động từ / danh từ)", a: "restrict / a restriction / restrictions", ok: ["restriction"], ipa: "/rɪˈstrɪkt/", meaning: "restrict = động từ (hạn chế). a restriction = danh từ số ít (một quy định). restrictions = danh từ số nhiều (những quy định — hay dùng vì thường có nhiều luật).", ex: "The government restricts hunting. There are restrictions on hunting.", exVi: "Chính phủ hạn chế săn bắt. Có những quy định cấm săn." },
+      { tag: "Nature", q: "Suy giảm", a: "decline", ipa: "/dɪˈklaɪn/", meaning: "giảm dần", ex: "The number of tigers is in decline.", exVi: "Số hổ đang giảm." },
+      { tag: "Nature", q: "Nổi tiếng (tính từ)", a: "renowned", ipa: "/rɪˈnaʊnd/", meaning: "nổi tiếng, được biết đến rộng", ex: "She is a renowned scientist.", exVi: "Cô ấy là nhà khoa học nổi tiếng." },
+      { tag: "Nature", q: "Những nhà khoa học hàng đầu", a: "leading scientists", ipa: "/ˈliːdɪŋ ˈsaɪəntɪsts/", meaning: "nhà khoa học giỏi, đứng đầu ngành", ex: "Leading scientists are trying to protect natural habitats.", exVi: "Những nhà khoa học hàng đầu đang cố bảo vệ môi trường sống tự nhiên." },
+      { tag: "Nature", q: "Bảo vệ môi trường sống tự nhiên", a: "protect natural habitats", ipa: "/prəˈtekt ˈnætʃrəl ˈhæbɪtæts/", meaning: "giữ nơi động vật sống", ex: "We need to protect natural habitats from habitat loss.", exVi: "Chúng ta cần bảo vệ môi trường sống khỏi bị mất đi." },
+      { tag: "Nature", q: "Có nguy cơ tuyệt chủng", a: "be in danger of extinction", ipa: "/ɪn ˈdeɪndʒər əv ɪkˈstɪŋkʃn/", meaning: "có thể biến mất khỏi trái đất", ex: "Many species are in danger of extinction because of habitat loss.", exVi: "Nhiều loài có nguy cơ tuyệt chủng vì mất môi trường sống." },
+      { tag: "Nature", q: "Mất môi trường sống", a: "habitat loss", ipa: "/ˈhæbɪtæt lɒs/", meaning: "nơi ở của động vật bị phá", ex: "Habitat loss is the main cause of extinction.", exVi: "Mất môi trường sống là nguyên nhân chính của tuyệt chủng." },
+      { tag: "Nature", q: "Thân thiện với môi trường", a: "environmentally friendly / eco-friendly", ipa: "/ɪnˌvaɪrənˈmentəli ˈfrendli/", meaning: "ít hại môi trường", ex: "We should buy eco-friendly products.", exVi: "Chúng ta nên mua đồ thân thiện với môi trường." },
+      { tag: "Nature", q: "Động vật sống tự do ngoài tự nhiên", a: "roaming animals", ipa: "/ˈrəʊmɪŋ ˈænɪmlz/", meaning: "động vật đi lại tự do, không nuôi nhốt", ex: "Roaming animals need large natural habitats.", exVi: "Động vật sống tự do cần môi trường sống rộng." },
+      { tag: "Nature", q: "Tuổi thọ", a: "life expectancy / longevity", ipa: "/laɪf ɪkˈspektənsi/", meaning: "sống được bao lâu", ex: "Life expectancy is rising in many countries.", exVi: "Tuổi thọ đang tăng ở nhiều nước." },
+      { tag: "Nature", q: "Gây tranh cãi", a: "controversial", ipa: "/ˌkɒntrəˈvɜːʃl/", meaning: "làm người ta bất đồng", ex: "This is a controversial issue.", exVi: "Đây là vấn đề gây tranh cãi." },
+      { tag: "Nature", q: "Một vấn đề gây tranh cãi", a: "a controversial issue", ipa: "/ə ˌkɒntrəˈvɜːʃl ˈɪʃuː/", meaning: "chuyện nhiều người cãi nhau", ex: "Poaching is a controversial issue in some areas.", exVi: "Săn bắt trái phép là vấn đề gây tranh cãi ở một số nơi." },
+      { tag: "Nature", q: "Sự tranh cãi", a: "controversy", ipa: "/ˈkɒntrəvɜːsi/", meaning: "danh từ: cuộc tranh cãi", ex: "The plan caused a lot of controversy.", exVi: "Kế hoạch đó gây nhiều tranh cãi." },
+      { tag: "Nature", q: "Những lý thuyết không có căn cứ", a: "unsupported theories", ipa: "/ˌʌnsəˈpɔːtɪd ˈθɪəriz/", meaning: "ý kiến không có bằng chứng", ex: "We should not believe unsupported theories.", exVi: "Không nên tin những lý thuyết không có căn cứ." },
+      { tag: "Nature", q: "Săn bắt trái phép", a: "poaching / illegal hunting", ipa: "/ˈpəʊtʃɪŋ/", meaning: "săn thú trái luật", ex: "The bottom line is that poaching is a pressing issue.", exVi: "Điểm cốt lõi là săn bắt trái phép là vấn đề cấp bách." },
+      { tag: "Nature", q: "Vấn đề cấp bách", a: "a pressing issue", ipa: "/ə ˈpresɪŋ ˈɪʃuː/", meaning: "việc cần xử lý ngay", ex: "Air pollution is a pressing issue in major cities.", exVi: "Ô nhiễm không khí là vấn đề cấp bách ở các thành phố lớn." },
+      { tag: "Nature", q: "Khu bảo tồn thiên nhiên", a: "nature reserve", ipa: "/ˈneɪtʃə rɪˈzɜːv/", meaning: "khu đất để bảo vệ động thực vật", ex: "Rangers work in the nature reserve.", exVi: "Kiểm lâm làm việc trong khu bảo tồn." },
+      { tag: "Nature", q: "Nuôi nhốt (không thả tự nhiên)", a: "in captivity", ipa: "/ɪn kæpˈtɪvəti/", meaning: "nuôi trong chuồng / sở thú", ex: "Some animals live in captivity, not in nature.", exVi: "Một số động vật sống trong nuôi nhốt, không phải ngoài tự nhiên." },
+      { tag: "Nature", q: "Rừng đô thị", a: "urban forests", ipa: "/ˈɜːbən ˈfɒrɪsts/", meaning: "rừng / cây xanh trong thành phố", ex: "Urban forests are home to many species.", exVi: "Rừng đô thị là nhà của nhiều loài." },
+      { tag: "Nature", q: "Đa dạng sinh học", a: "biodiversity", ipa: "/ˌbaɪəʊdaɪˈvɜːsəti/", meaning: "nhiều loài động thực vật", ex: "Local authorities make a relentless effort to maintain biodiversity.", exVi: "Chính quyền địa phương nỗ lực không ngừng để giữ đa dạng sinh học." },
+      { tag: "Nature", q: "Biến đổi khí hậu", a: "climate change", ipa: "/ˈklaɪmət tʃeɪndʒ/", meaning: "khí hậu trái đất đang đổi", ex: "Climate change can lead to rising sea levels.", exVi: "Biến đổi khí hậu có thể khiến mực nước biển dâng." },
+      { tag: "Nature", q: "Nóng lên toàn cầu", a: "global warming", ipa: "/ˈɡləʊbl ˈwɔːmɪŋ/", meaning: "trái đất nóng dần", ex: "Global warming is linked to climate change.", exVi: "Nóng lên toàn cầu gắn với biến đổi khí hậu." },
+      { tag: "Nature", q: "Mực nước biển dâng", a: "rising sea levels", ipa: "/ˈraɪzɪŋ siː ˈlevlz/", meaning: "biển dâng cao hơn", ex: "Rising sea levels threaten many coastal cities.", exVi: "Mực nước biển dâng đe dọa nhiều thành phố ven biển." },
+      { tag: "Nature", q: "Hành động ngay lập tức", a: "take action immediately", ipa: "/teɪk ˈækʃn ɪˈmiːdiətli/", meaning: "làm ngay, không chờ", ex: "If we do not take action immediately, pollution will get worse.", exVi: "Nếu chúng ta không hành động ngay, ô nhiễm sẽ tệ hơn." },
+      { tag: "Nature", q: "Chuỗi thức ăn", a: "the food chain", ipa: "/ðə fuːd tʃeɪn/", meaning: "ai ăn ai trong tự nhiên", ex: "Each species plays a role in the food chain.", exVi: "Mỗi loài đóng một vai trong chuỗi thức ăn." },
+      { tag: "Nature", q: "Hạ tầng xanh", a: "green infrastructure", ipa: "/ɡriːn ˈɪnfrəstrʌktʃə/", meaning: "công trình thân thiện môi trường, như công viên, mái xanh", ex: "Cities should invest in green infrastructure.", exVi: "Các thành phố nên đầu tư vào hạ tầng xanh." },
+      { tag: "Nature", q: "Lọc không khí", a: "filter the air", ipa: "/ˈfɪltə ði eə/", meaning: "làm sạch khí", ex: "Trees filter the air and produce oxygen.", exVi: "Cây lọc không khí và tạo oxy." },
+      { tag: "Nature", q: "Sản xuất oxy", a: "produce oxygen", ipa: "/prəˈdjuːs ˈɒksɪdʒən/", meaning: "tạo khí oxy", ex: "Forests produce oxygen and absorb carbon dioxide.", exVi: "Rừng tạo oxy và hấp thụ khí carbon dioxide." },
+      { tag: "Nature", q: "Hấp thụ khí carbon dioxide", a: "absorb carbon dioxide", ipa: "/əbˈzɔːb ˈkɑːbən daɪˈɒksaɪd/", meaning: "hút CO2", ex: "Trees absorb carbon dioxide from the air.", exVi: "Cây hút khí carbon dioxide từ không khí." },
+      { tag: "Nature", q: "Có tác động tiêu cực đến", a: "have a detrimental effect on", ipa: "/həv ə ˌdetrɪˈmentl ɪˈfekt ɒn/", meaning: "làm hại", ex: "Pollution has a detrimental effect on our health.", exVi: "Ô nhiễm có tác động có hại đến sức khỏe chúng ta." },
+
+      { tag: "Writing", q: "Điểm cốt lõi là", a: "the bottom line is that", ipa: "/ðə ˈbɒtəm laɪn ɪz ðæt/", meaning: "ý quan trọng nhất là", ex: "The bottom line is that parents should be role models.", exVi: "Điểm cốt lõi là bố mẹ nên là tấm gương." },
+      { tag: "Writing", q: "Cuối cùng, sự thật vẫn là", a: "in the end, the fact remains that", ipa: "/ɪn ði end ðə fækt rɪˈmeɪnz ðæt/", meaning: "dù nói gì thì sự thật vẫn là", ex: "In the end, the fact remains that children need support.", exVi: "Cuối cùng, sự thật vẫn là trẻ cần được hỗ trợ." },
+      { tag: "Writing", q: "Có đủ tố chất / khả năng để", a: "have what it takes to", ipa: "/hæv wɒt ɪt teɪks tuː/", meaning: "đủ khả năng làm việc đó", ex: "She has what it takes to be a good leader.", exVi: "Cô ấy có đủ tố chất để làm lãnh đạo tốt." },
+      { tag: "Writing", q: "Có bước đi cụ thể hướng tới", a: "take concrete steps towards", ipa: "/teɪk ˈkɒŋkriːt steps təˈwɔːdz/", meaning: "làm việc cụ thể, không chỉ nói", ex: "We should take concrete steps towards cleaner air.", exVi: "Chúng ta nên có bước đi cụ thể hướng tới không khí sạch hơn." },
+      { tag: "Writing", q: "Từng bước vươn lên vị trí cao", a: "work their way to the top", ipa: "/wɜːk ðeə weɪ tə ðə tɒp/", meaning: "lên dần, không nhảy cóc", ex: "Many people work their way to the top by working hard.", exVi: "Nhiều người từng bước vươn lên bằng cách làm việc chăm." },
+      { tag: "Writing", q: "Nền kinh tế tri thức", a: "the knowledge-based economy", ipa: "/ðə ˈnɒlɪdʒ beɪst ɪˈkɒnəmi/", meaning: "kinh tế dựa trên kiến thức, kỹ năng", ex: "Soft skills matter in the knowledge-based economy.", exVi: "Kỹ năng mềm rất quan trọng trong nền kinh tế tri thức." },
+      { tag: "Writing", q: "Việc làm khởi điểm", a: "entry-level jobs", ipa: "/ˈentri levl dʒɒbz/", meaning: "việc cho người mới ra trường", ex: "New graduates often get entry-level jobs.", exVi: "Sinh viên mới ra trường thường nhận việc khởi điểm." },
+      { tag: "Writing", q: "Tạo nên sự khác biệt trong cuộc sống của người khác", a: "make a difference in the lives of others", ipa: "/meɪk ə ˈdɪfrəns/", meaning: "giúp đời người khác tốt hơn", ex: "Teachers can make a difference in the lives of others.", exVi: "Giáo viên có thể tạo nên sự khác biệt trong đời người khác." },
+      { tag: "Writing", q: "Để giải quyết vấn đề", a: "to address the issue of", ipa: "/tə əˈdres ði ˈɪʃuː əv/", meaning: "xử lý / đối mặt vấn đề", ex: "We need to address the issue of habitat loss.", exVi: "Chúng ta cần giải quyết vấn đề mất môi trường sống." },
+      { tag: "Writing", q: "Nổi lên như / trở thành", a: "emerge as", ipa: "/ɪˈmɜːdʒ æz/", meaning: "xuất hiện, trở thành", ex: "AI has emerged as a key skill for many jobs.", exVi: "AI đã nổi lên thành kỹ năng then chốt cho nhiều việc." },
+      { tag: "Writing", q: "Từ lâu đã bị xem là", a: "has long been perceived as", ipa: "/hæz lɒŋ biːn pəˈsiːvd æz/", meaning: "người ta vẫn nghĩ là", ex: "Teaching has long been perceived as a noble job.", exVi: "Dạy học từ lâu vẫn được xem là nghề cao quý." },
+      { tag: "Writing", q: "Là một phần không thể thiếu của", a: "is an indispensable part of", ipa: "/ɪz ən ˌɪndɪˈspensəbl pɑːt əv/", meaning: "không có thì thiếu", ex: "Soft skills are an indispensable part of city life.", exVi: "Kỹ năng mềm là phần không thể thiếu của đời sống thành phố." },
+      { tag: "Writing", q: "Trong nỗ lực để", a: "in an effort to", ipa: "/ɪn ən ˈefət tuː/", meaning: "cố để làm gì", ex: "In an effort to cut pollution, the city planted more trees.", exVi: "Trong nỗ lực giảm ô nhiễm, thành phố trồng thêm cây." },
+      { tag: "Writing", q: "Một cảm giác mục tiêu trong đời", a: "a high sense of purpose in life", ipa: "/ə haɪ sens əv ˈpɜːpəs/", meaning: "biết mình sống để làm gì", ex: "Parents hope children have a high sense of purpose in life.", exVi: "Bố mẹ mong con có cảm giác mục tiêu trong đời." },
+      { tag: "Writing", q: "Ý thức trách nhiệm", a: "a sense of duty", ipa: "/ə sens əv ˈdjuːti/", meaning: "cảm thấy mình phải làm đúng việc", ex: "Some people work out of a sense of duty.", exVi: "Một số người đi làm vì ý thức trách nhiệm." },
+      { tag: "Writing", q: "Cảm giác hoàn thành", a: "a sense of accomplishment", ipa: "/ə sens əv əˈkʌmplɪʃmənt/", meaning: "cảm giác làm xong việc đáng kể", ex: "Finishing the course gave me a sense of accomplishment.", exVi: "Học xong khóa đó cho tôi cảm giác hoàn thành." },
+      { tag: "Writing", q: "Cha mẹ đòi hỏi cao", a: "demanding parents", ipa: "/dɪˈmɑːndɪŋ ˈpeərənts/", meaning: "bố mẹ đòi con phải giỏi", ex: "His success is largely down to his demanding parents.", exVi: "Thành công của anh ấy phần lớn nhờ bố mẹ đòi hỏi cao." },
+      { tag: "Writing", q: "Không bỏ cuộc", a: "never give up", ipa: "/ˈnevə ɡɪv ʌp/", meaning: "cứ làm tiếp, không dừng", ex: "Success comes to those who never give up.", exVi: "Thành công đến với người không bỏ cuộc." },
+      { tag: "Writing", q: "Trưởng thành thành người lớn tự lập", a: "grow into self-sufficient adults", ipa: "/ɡrəʊ ˈɪntə self səˈfɪʃnt ˈædʌlts/", meaning: "lớn lên biết tự lo", ex: "Children need freedom to grow into self-sufficient adults.", exVi: "Trẻ cần sự tự do để lớn thành người lớn tự lập." },
+      { tag: "Writing", q: "Hòa hợp / chơi được với ai", a: "get on well with / get along with", ipa: "/ɡet ɒn wel wɪð/", meaning: "quan hệ tốt với người khác", ex: "I get on well with my classmates.", exVi: "Tôi hòa hợp với bạn cùng lớp." },
+      { tag: "Writing", q: "Trong thời đại AI", a: "in the age of AI", ipa: "/ɪn ði eɪdʒ əv eɪ aɪ/", meaning: "ở thời có trí tuệ nhân tạo", ex: "In the age of AI, we need to keep learning.", exVi: "Trong thời đại AI, chúng ta cần học tiếp." },
+      { tag: "Writing", q: "Trong kỷ nguyên công nghệ", a: "in the tech-driven era", ipa: "/ɪn ðə tek ˈdrɪvn ˈɪərə/", meaning: "thời mọi thứ chạy bằng công nghệ", ex: "In the tech-driven era, many jobs are changing.", exVi: "Trong kỷ nguyên công nghệ, nhiều việc đang đổi." },
+      { tag: "Writing", q: "Kinh nghiệm thực tế", a: "hands-on experience", ipa: "/hændz ɒn ɪkˈspɪəriəns/", meaning: "học bằng làm thật, không chỉ sách", ex: "Students should gain hands-on experience from part-time jobs.", exVi: "Sinh viên nên tích lũy kinh nghiệm thực tế từ các công việc bán thời gian." },
+      { tag: "Writing", q: "Chủ động", a: "be proactive", ipa: "/bi prəʊˈæktɪv/", meaning: "tự làm trước, không chờ", ex: "Learners need to be proactive about their studies.", exVi: "Người học cần chủ động với việc học." },
+      { tag: "Writing", q: "Không học sinh nào bị bỏ lại phía sau", a: "no student should be left behind", ipa: "/nəʊ ˈstjuːdnt ʃʊd bi left bɪˈhaɪnd/", meaning: "phải giúp cả bạn học chậm", ex: "She always says that no student should be left behind.", exVi: "Cô luôn nói không học sinh nào bị bỏ lại phía sau." },
+      { tag: "Writing", q: "Đặc biệt quan tâm đến", a: "pay special attention to", ipa: "/peɪ ˈspeʃl əˈtenʃn tuː/", meaning: "để ý kỹ hơn", ex: "She pays special attention to slow learners.", exVi: "Cô đặc biệt quan tâm đến những bạn học chậm." },
+      { tag: "Writing", q: "Tuổi thơ vô lo", a: "a carefree childhood", ipa: "/ə ˈkeəfriː ˈtʃaɪldhʊd/", meaning: "trẻ được chơi, ít áp lực", ex: "Children deserve a carefree childhood.", exVi: "Trẻ xứng đáng có tuổi thơ vô lo." },
+      { tag: "Writing", q: "Chìa khóa thành công", a: "the key to success", ipa: "/ðə kiː tə səkˈses/", meaning: "điều quan trọng nhất để thành công", ex: "Learning by yourself is the key to success.", exVi: "Tự học là chìa khóa thành công." },
+      { tag: "Writing", q: "Phát huy hết khả năng", a: "reach their full potential", ipa: "/riːtʃ ðeə fʊl pəˈtenʃl/", meaning: "làm được hết sức mình", ex: "With the right support, children can reach their full potential.", exVi: "Được hỗ trợ đúng, trẻ có thể phát huy hết khả năng." },
+      { tag: "Writing", q: "Du học", a: "study overseas", ipa: "/ˈstʌdi ˌəʊvəˈsiːz/", meaning: "học ở nước ngoài", ex: "Many young people want to study overseas.", exVi: "Nhiều bạn trẻ muốn du học." },
+      { tag: "Writing", q: "Sự bền bỉ", a: "grit", ipa: "/ɡrɪt/", meaning: "bền bỉ, không bỏ cuộc", ex: "Grit is a key predictor of success in life.", exVi: "Sự bền bỉ là yếu tố then chốt để thành công trong đời." },
+      { tag: "Writing", q: "Làm đúng cam kết", a: "follow through on a commitment", ipa: "/ˈfɒləʊ θruː ɒn ə kəˈmɪtmənt/", meaning: "đã hứa thì làm tới cùng", ex: "She always follows through on a commitment.", exVi: "Cô ấy luôn làm đúng cam kết đến cùng." },
+      { tag: "Writing", q: "Nhà ở xã hội", a: "social housing", ipa: "/ˈsəʊʃl ˈhaʊzɪŋ/", meaning: "nhà giá thấp do nhà nước hỗ trợ", ex: "Social housing is still out of reach for some families.", exVi: "Nhà ở xã hội vẫn ngoài tầm với của một số gia đình." },
+      { tag: "Writing", q: "Ngoài tầm với", a: "out of reach", ipa: "/aʊt əv riːtʃ/", meaning: "không với tới được, quá đắt / khó", ex: "Home ownership is out of reach for many families.", exVi: "Sở hữu nhà ngoài tầm với của nhiều gia đình." },
+      { tag: "Writing", q: "Tư duy phát triển", a: "growth mindset", ipa: "/ɡrəʊθ ˈmaɪndset/", meaning: "tin mình học được nếu chịu khó", ex: "A growth mindset helps people keep learning.", exVi: "Tư duy phát triển giúp người ta học tiếp được." },
+      { tag: "Writing", q: "Tư duy cố định", a: "fixed mindset", ipa: "/fɪkst ˈmaɪndset/", meaning: "tin khả năng không đổi được", ex: "A fixed mindset can hold people back.", exVi: "Tư duy cố định có thể kìm người ta lại." },
+      { tag: "Writing", q: "Tập trung vào việc học", a: "focus on their studies", ipa: "/ˈfəʊkəs ɒn ðeə ˈstʌdiz/", meaning: "lo học trước", ex: "What young people need to do is focus on their studies.", exVi: "Những gì giới trẻ cần làm là tập trung vào việc học." },
+      { tag: "Writing", q: "Thành công trong sự nghiệp", a: "succeed in their careers", ipa: "/səkˈsiːd ɪn ðeə kəˈrɪəz/", meaning: "làm việc thành công", ex: "Whether they succeed in their careers depends on their own effort.", exVi: "Họ có thành công trong sự nghiệp hay không phụ thuộc vào nỗ lực của chính họ." },
+      { tag: "Writing", q: "Cạnh tranh với AI để có việc tử tế", a: "compete with AI for decent jobs", ipa: "/kəmˈpiːt wɪð eɪ aɪ/", meaning: "tranh việc với máy", ex: "People need new skills to compete with AI for decent jobs.", exVi: "Người ta cần kỹ năng mới để cạnh tranh với AI cho việc tử tế." },
+      { tag: "Writing", q: "Chịu áp lực rất lớn", a: "under immense pressure", ipa: "/ˈʌndər ɪˈmens ˈpreʃə/", meaning: "bị đè nặng", ex: "Some children work under immense pressure to live up to expectations.", exVi: "Một số trẻ phải học dưới áp lực rất lớn để đáp ứng kỳ vọng." },
+      { tag: "Writing", q: "Thư giãn sau (học / làm)", a: "unwind after", ipa: "/ʌnˈwaɪnd ˈɑːftə/", meaning: "xả hơi sau khi mệt", ex: "Many young people play games to unwind after study.", exVi: "Nhiều bạn trẻ chơi game để xả hơi sau giờ học." },
+      { tag: "Writing", q: "Ở mức vừa phải", a: "in moderation", ipa: "/ɪn ˌmɒdəˈreɪʃn/", meaning: "không quá nhiều", ex: "Playing games is fine if we play in moderation.", exVi: "Chơi game cũng được nếu chơi vừa phải." },
+      { tag: "Writing", q: "Khó tập trung", a: "find it hard to focus", ipa: "/faɪnd ɪt hɑːd tə ˈfəʊkəs/", meaning: "không chú ý được", ex: "A student who games until late will find it hard to focus the next morning.", exVi: "Học sinh chơi game đến khuya sẽ khó tập trung sáng hôm sau." },
+      { tag: "Writing", q: "Đang trải qua giai đoạn khó", a: "going through a hard time", ipa: "/ˈɡəʊɪŋ θruː ə hɑːd taɪm/", meaning: "đang gặp chuyện buồn / khó", ex: "He was going through a hard time before he became famous.", exVi: "Anh ấy đang trải qua giai đoạn khó trước khi nổi tiếng." },
+      { tag: "Writing", q: "Mong chờ điều gì", a: "look forward to", ipa: "/lʊk ˈfɔːwəd tuː/", meaning: "mong tới", ex: "I always look forward to his new music.", exVi: "Tôi luôn mong chờ nhạc mới của anh ấy." },
+      { tag: "Writing", q: "Động lực phía sau thành công", a: "the driving force behind success", ipa: "/ðə ˈdraɪvɪŋ fɔːs/", meaning: "cái thúc người ta thành công", ex: "Grit can be the driving force behind success.", exVi: "Sự bền bỉ có thể là động lực phía sau thành công." },
+      { tag: "Writing", q: "Tiêu xài bừa bãi", a: "reckless spending", ipa: "/ˈrekləs ˈspendɪŋ/", meaning: "xài tiền không nghĩ trước", ex: "Reckless spending can get young people into debt.", exVi: "Tiêu xài bừa có thể khiến giới trẻ mắc nợ." },
+      { tag: "Writing", q: "Đồng cảm", a: "empathy", ipa: "/ˈempəθi/", meaning: "hiểu và cảm được cảm xúc người khác", ex: "Empathy is a key soft skill. The opposite is apathetic.", exVi: "Đồng cảm là kỹ năng mềm then chốt. Ngược lại là thờ ơ." },
+
+      { tag: "Sept 27", q: "Có nhiều điểm chung", a: "have a lot in common", ipa: "/hæv ə lɒt ɪn ˈkɒmən/", meaning: "giống nhau nhiều điểm", ex: "My parents and I have a lot in common.", exVi: "Bố mẹ và tôi có nhiều điểm chung." },
+      { tag: "Sept 27", q: "Dành thời gian bên nhau cuối tuần", a: "spend time together at the weekend", ipa: "/spend taɪm təˈɡeðə/", meaning: "ở bên nhau ngày nghỉ", ex: "We often spend time together at the weekend.", exVi: "Chúng tôi thường dành thời gian bên nhau vào cuối tuần." },
+      { tag: "Sept 27", q: "Ngang bằng / thậm chí vượt trí tuệ con người", a: "match or even exceed", ipa: "/mætʃ ɔːr ˈiːvn ɪkˈsiːd/", meaning: "sánh bằng, có khi còn hơn", ex: "Some people think AI may match or even exceed human intelligence.", exVi: "Một số người nghĩ AI có thể ngang bằng, thậm chí vượt trí tuệ con người." },
+      { tag: "Sept 27", q: "Dùng công cụ này hiệu quả nhất", a: "make the most of", ipa: "/meɪk ðə məʊst əv/", meaning: "tận dụng hết", ex: "We need enough skills to make the most of this tool.", exVi: "Chúng ta cần đủ kỹ năng để tận dụng công cụ này." },
+      { tag: "Sept 27", q: "Thành công ở trường", a: "succeed at school", ipa: "/səkˈsiːd ət skuːl/", meaning: "học tốt, không trượt", ex: "Even with their parents' support, some students do not succeed at school.", exVi: "Dù được bố mẹ hỗ trợ, một số học sinh vẫn không thành công ở trường." },
+      { tag: "Sept 27", q: "Nhờ đổi mới công nghệ", a: "thanks to technological innovation", ipa: "/θæŋks tə ˌteknəˈlɒdʒɪkl ˌɪnəˈveɪʃn/", meaning: "vì có công nghệ mới", ex: "Thanks to technological innovation, people can connect more easily.", exVi: "Nhờ đổi mới công nghệ, mọi người kết nối dễ hơn." },
+      { tag: "Sept 27", q: "Kết nối với nhau", a: "connect with each other", ipa: "/kəˈnekt wɪð iːtʃ ˈʌðə/", meaning: "liên lạc / gặp nhau", ex: "People can connect with each other more easily now.", exVi: "Giờ mọi người có thể kết nối với nhau dễ dàng hơn." },
+      { tag: "Sept 27", q: "Thấy dễ kết bạn với người lạ", a: "find it easy to make friends", ipa: "/faɪnd ɪt ˈiːzi/", meaning: "cấu trúc find it + adj + to V", ex: "Some people find it easy to make friends with strangers.", exVi: "Một số người thấy dễ kết bạn với người lạ." },
+      { tag: "Sept 27", q: "Tham gia trò chơi ngoài trời", a: "get involved in outdoor games", ipa: "/ɡet ɪnˈvɒlvd ɪn/", meaning: "tham gia, có mặt trong hoạt động", ex: "When children have less free time, they cannot get involved in outdoor games.", exVi: "Khi trẻ có ít thời gian rảnh, chúng không thể tham gia trò chơi ngoài trời." },
+      { tag: "Sept 27", q: "Cách học qua trò chơi", a: "play-based methods", ipa: "/pleɪ beɪst ˈmeθədz/", meaning: "học bằng chơi", ex: "If teachers use play-based methods, students will enjoy their studies more.", exVi: "Nếu giáo viên dùng cách học qua chơi, học sinh sẽ thích học hơn." },
+      { tag: "Sept 27", q: "Thấy chán (cảm xúc của mình)", a: "get bored / feel bored", ipa: "/ɡet bɔːd/", meaning: "mình chán. boring = cái gì đó gây chán", ex: "When I get bored, I can't focus on my studies.", exVi: "Khi tôi thấy chán, tôi không thể tập trung vào việc học." },
+      { tag: "Sept 27", q: "Làm việc từ nhà", a: "work from home", ipa: "/wɜːk frəm həʊm/", meaning: "không cần vào văn phòng", ex: "If people work from home, they can avoid traffic.", exVi: "Nếu làm việc từ nhà, người ta có thể tránh kẹt xe." },
+      { tag: "Sept 27", q: "Rào cản ngôn ngữ", a: "the language barrier", ipa: "/ðə ˈlæŋɡwɪdʒ ˈbæriə/", meaning: "không nói được tiếng chỗ mới", ex: "What international students need to overcome is the language barrier.", exVi: "Điều du học sinh cần vượt qua là rào cản ngôn ngữ." },
+      { tag: "Sept 27", q: "Sốc văn hóa", a: "culture shock", ipa: "/ˈkʌltʃə ʃɒk/", meaning: "bỡ ngỡ khi sống ở văn hóa khác", ex: "Many students also face culture shock when they study overseas.", exVi: "Nhiều sinh viên còn bị sốc văn hóa khi du học." },
+      { tag: "Sept 27", q: "Thích nghi với lối sống mới", a: "adapt to a new lifestyle", ipa: "/əˈdæpt tuː ə njuː ˈlaɪfstaɪl/", meaning: "quen dần cách sống mới", ex: "They need to adapt to a new lifestyle.", exVi: "Họ cần thích nghi với lối sống mới." },
+      { tag: "Sept 27", q: "Tìm việc tử tế", a: "find a decent job", ipa: "/faɪnd ə ˈdiːsnt dʒɒb/", meaning: "việc ổn, lương không quá tệ", ex: "Soft skills help students find a decent job later.", exVi: "Kỹ năng mềm giúp sinh viên tìm việc tử tế về sau." },
+      { tag: "Sept 27", q: "Người lớn tuổi / người cao tuổi", a: "elderly people / senior citizens", ipa: "/ˈeldəli ˈpiːpl/", meaning: "người già, nói lịch sự", ex: "Senior citizens deserve our respect.", exVi: "Người cao tuổi xứng đáng được tôn trọng." },
+      { tag: "Sept 27", q: "Tình yêu không điều kiện", a: "unconditional love", ipa: "/ˌʌnkənˈdɪʃənl lʌv/", meaning: "yêu không đòi đổi lại", ex: "Parents often give their children unconditional love.", exVi: "Bố mẹ thường dành cho con tình yêu không điều kiện." },
+      { tag: "Sept 27", q: "Trân trọng sự hy sinh của bố mẹ", a: "treasure their parents' sacrifice", ipa: "/ˈtreʒə/", meaning: "quý, không xem nhẹ", ex: "Some young people do not treasure their parents' sacrifice.", exVi: "Một số bạn trẻ không trân trọng sự hy sinh của bố mẹ." },
+      { tag: "Sept 27", q: "Làm việc với đam mê và quyết tâm", a: "work with passion and determination", ipa: "/wɜːk wɪð ˈpæʃn/", meaning: "làm hết mình, không bỏ giữa chừng", ex: "If children like their studies, they will work with passion and determination.", exVi: "Nếu trẻ thích học, chúng sẽ làm việc với đam mê và quyết tâm." },
+      { tag: "Sept 27", q: "Nghĩ ra ý tưởng mới", a: "come up with original ideas", ipa: "/kʌm ʌp wɪð əˈrɪdʒənl aɪˈdɪəz/", meaning: "nghĩ ra cái mới, không copy", ex: "Young people can come up with original ideas for a company.", exVi: "Người trẻ có thể nghĩ ra ý tưởng mới cho công ty." },
+      { tag: "Sept 27", q: "Cởi mở với thay đổi", a: "open to change", ipa: "/ˈəʊpən tə tʃeɪndʒ/", meaning: "không bảo thủ, chịu thử cái mới", ex: "Good leaders are open to change and willing to try new ideas.", exVi: "Lãnh đạo tốt cởi mở với thay đổi và chịu thử ý tưởng mới." },
+      { tag: "Sept 27", q: "Suy nghĩ sáng tạo / không theo lối mòn", a: "think outside the box", ipa: "/θɪŋk ˌaʊtˈsaɪd ðə bɒks/", meaning: "nghĩ khác mọi người", ex: "They can think outside the box, aim high, and push themselves.", exVi: "Họ có thể nghĩ khác lối mòn, đặt mục tiêu cao, và tự thúc mình." },
+      { tag: "Sept 27", q: "Gánh nặng công việc lớn", a: "a heavy workload", ipa: "/ə ˈhevi ˈwɜːkləʊd/", meaning: "việc nhiều, mệt", ex: "Good health helps them handle a heavy workload.", exVi: "Sức khỏe tốt giúp họ gánh được khối lượng việc lớn." },
+      { tag: "Sept 27", q: "Không bảo thủ", a: "not conservative", ipa: "/nɒt kənˈsɜːvətɪv/", meaning: "không khư khư cái cũ", ex: "Young people are often not conservative, so they keep learning.", exVi: "Người trẻ thường không bảo thủ, nên họ cứ học tiếp." },
+      { tag: "Sept 27", q: "Thăng tiến / lên nấc thang sự nghiệp", a: "move up the ladder", ipa: "/muːv ʌp ðə ˈlædə/", meaning: "lên chức dần", ex: "That's why they have what it takes to move up the ladder.", exVi: "Đó là lý do họ có đủ tố chất để thăng tiến." },
+      { tag: "Sept 27", q: "Muốn chứng tỏ bản thân", a: "prove themselves", ipa: "/pruːv ðəmˈselvz/", meaning: "cho người khác thấy mình làm được", ex: "Many young people want to prove themselves at work.", exVi: "Nhiều bạn trẻ muốn chứng tỏ bản thân lúc đi làm." }
     ];
 
     const quizEl = document.getElementById("quiz");
     const doneEl = document.getElementById("done");
-    const choicesEl = document.getElementById("choices");
     const explainEl = document.getElementById("explain");
     const nextBtn = document.getElementById("next");
+    const prevBtn = document.getElementById("prev");
+    const submitBtn = document.getElementById("submit");
+    const inputEl = document.getElementById("answer");
+    const formEl = document.getElementById("form");
 
     let order = [];
     let i = 0;
     let score = 0;
     let missed = 0;
-    let locked = false;
+    let scored = false;
+    let gotRight = [];
+    let leftWrong = [];
+    let icons = [];
+    const ICONS = ["🌸", "🍀", "⭐", "🌈", "🐱", "🍓", "🌙", "🐻", "🎀", "🍋", "🌼", "🐣", "🍑", "🌊", "🐰", "🍪", "🌟", "🧋"];
 
     function shuffle(arr) {
       const a = arr.slice();
@@ -194,19 +363,43 @@
       return a;
     }
 
+    function norm(s) {
+      return String(s)
+        .toLowerCase()
+        .replace(/[’‘]/g, "'")
+        .replace(/[^a-z0-9' ]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function answersOf(item) {
+      const raw = [item.a, ...(item.ok || [])];
+      return raw.flatMap((s) => String(s).split(/\s*\/\s*/)).map(norm).filter(Boolean);
+    }
+
+    function isCorrect(input, item) {
+      const got = norm(input);
+      if (!got) return false;
+      return answersOf(item).some((a) => got === a);
+    }
+
     function start() {
       order = shuffle(BANK);
       i = 0;
       score = 0;
       missed = 0;
+      gotRight = [];
+      leftWrong = [];
+      icons = order.map(() => ICONS[Math.floor(Math.random() * ICONS.length)]);
       quizEl.hidden = false;
       doneEl.hidden = true;
       render();
     }
 
     function render() {
-      locked = false;
+      scored = !!gotRight[i];
       const item = order[i];
+      document.getElementById("qicon").textContent = icons[i];
       document.getElementById("tag").textContent = item.tag;
       document.getElementById("question").textContent = item.q;
       document.getElementById("count").textContent = `Câu ${i + 1}/${order.length}`;
@@ -214,44 +407,54 @@
       document.getElementById("bar").style.width = `${(i / order.length) * 100}%`;
       explainEl.hidden = true;
       nextBtn.hidden = true;
-
-      const opts = shuffle([item.a, ...item.w]);
-      choicesEl.innerHTML = "";
-      opts.forEach((text) => {
-        const b = document.createElement("button");
-        b.className = "choice";
-        b.type = "button";
-        b.textContent = text;
-        b.addEventListener("click", () => pick(b, text, item));
-        choicesEl.appendChild(b);
-      });
+      submitBtn.hidden = false;
+      submitBtn.textContent = "Submit";
+      prevBtn.disabled = i === 0;
+      inputEl.value = "";
+      inputEl.disabled = false;
+      inputEl.classList.remove("ok", "bad");
+      inputEl.focus();
     }
 
-    function pick(btn, text, item) {
-      if (locked) return;
-      locked = true;
-      const buttons = [...choicesEl.querySelectorAll("button")];
-      buttons.forEach((b) => {
-        b.disabled = true;
-        if (b.textContent === item.a) b.classList.add("ok");
-      });
-      if (text === item.a) {
+    function submit() {
+      const item = order[i];
+      const text = inputEl.value.trim();
+      if (!text) {
+        inputEl.focus();
+        return;
+      }
+      const ok = isCorrect(text, item);
+      inputEl.classList.remove("ok", "bad");
+      inputEl.classList.add(ok ? "ok" : "bad");
+      if (ok && !gotRight[i]) {
         score += 1;
-        btn.classList.add("ok");
-      } else {
-        missed += 1;
-        btn.classList.add("bad");
+        gotRight[i] = true;
+        scored = true;
+        if (leftWrong[i]) {
+          missed -= 1;
+          leftWrong[i] = false;
+        }
       }
       document.getElementById("scoreline").textContent = `Đúng ${score}`;
       explainEl.hidden = false;
+      const result = ok ? "Đúng." : "Chưa đúng.";
+      const vi = item.exVi ? `<p class="ex-vi">${item.exVi}</p>` : "";
       explainEl.innerHTML =
-        `<strong>Answer:</strong> ${item.a} <span class="ipa">${item.ipa}</span>: ${item.meaning}.` +
-        `<p class="ex"><strong>Example:</strong> ${item.ex}</p>`;
+        `<p class="verdict"><strong>${result}</strong></p>` +
+        `<p class="ans"><strong>Answer:</strong> ${item.a} <span class="ipa">${item.ipa}</span></p>` +
+        `<p class="ex-label"><strong>Example:</strong></p>` +
+        `<p class="ex">${item.ex}</p>` +
+        vi;
       nextBtn.hidden = false;
       nextBtn.textContent = i + 1 === order.length ? "Xem điểm" : "Câu tiếp";
     }
 
-    nextBtn.addEventListener("click", () => {
+    function goNext() {
+      if (nextBtn.hidden) return;
+      if (!gotRight[i] && !leftWrong[i]) {
+        missed += 1;
+        leftWrong[i] = true;
+      }
       if (i + 1 >= order.length) {
         document.getElementById("bar").style.width = "100%";
         quizEl.hidden = true;
@@ -262,6 +465,35 @@
         return;
       }
       i += 1;
+      render();
+    }
+
+    formEl.addEventListener("submit", (e) => {
+      e.preventDefault();
+      submit();
+    });
+
+    submitBtn.addEventListener("click", submit);
+
+    nextBtn.addEventListener("click", goNext);
+
+    function goPrev() {
+      if (i <= 0) {
+        quizEl.hidden = false;
+        doneEl.hidden = true;
+        render();
+        return;
+      }
+      i -= 1;
+      quizEl.hidden = false;
+      doneEl.hidden = true;
+      render();
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    document.getElementById("backLast").addEventListener("click", () => {
+      quizEl.hidden = false;
+      doneEl.hidden = true;
       render();
     });
 
