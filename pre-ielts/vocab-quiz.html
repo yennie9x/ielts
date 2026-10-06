@@ -113,16 +113,83 @@
       cursor: default;
     }
     .score { font-size: 1.5rem; font-weight: 700; margin: 0.4rem 0; }
+    .pack-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+    .pack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+      width: 100%;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      font: inherit;
+      cursor: pointer;
+    }
+    .pack:focus { outline: 2px solid var(--accent); }
+    .pack-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 0.4rem;
+    }
+    .pack strong { font-size: 1.05rem; }
+    .pack .n { color: var(--muted); font-size: 0.85rem; }
+    .mark {
+      flex-shrink: 0;
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 99px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .mark.ok {
+      background: var(--ok);
+      color: #fff;
+    }
+    .mark.busy {
+      border: 0;
+      background: conic-gradient(#ea580c 0 65%, #fed7aa 0);
+    }
+    .pack.done { border-color: #86efac; }
+    .pack.in-progress { border-color: #fdba74; }
+    .pack-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0 0 0.75rem;
+    }
+    .pack-bar strong { font-size: 1rem; }
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <main>
     <h1>Pre-IELTS — Vocab quiz</h1>
-    <p class="sub">Câu hỏi tiếng Việt. Gõ cụm tiếng Anh, rồi bấm Submit.</p>
-    <p class="updated">Cập nhật: 6 Oct 2026, 01:04</p>
+    <p class="sub">Chọn một bộ. Gõ cụm tiếng Anh, rồi bấm Submit.</p>
+    <p class="updated">Cập nhật: 7 Oct 2026, 00:10</p>
 
-    <section id="quiz">
+    <section id="packs">
+      <div class="pack-list" id="packList"></div>
+    </section>
+
+    <section id="quiz" hidden>
+      <div class="pack-bar">
+        <strong id="setTitle">Bộ 1</strong>
+        <button class="btn ghost" id="toPacks" type="button">Bộ khác</button>
+      </div>
       <div class="progress"><div class="bar" id="bar"></div></div>
       <div class="meta">
         <span id="count"></span>
@@ -153,6 +220,7 @@
         <p class="sub" id="missed"></p>
         <div class="row">
           <button class="btn ghost" id="backLast" type="button">Câu trước</button>
+          <button class="btn ghost" id="chooseSet" type="button">Chọn bộ khác</button>
           <button class="btn" id="retry">Làm lại (xáo câu)</button>
         </div>
       </div>
@@ -335,6 +403,17 @@
       { tag: "Sept 27", q: "Muốn chứng tỏ bản thân", a: "prove themselves", ipa: "/pruːv ðəmˈselvz/", meaning: "cho người khác thấy mình làm được", ex: "Many young people want to prove themselves at work.", exVi: "Nhiều bạn trẻ muốn chứng tỏ bản thân lúc đi làm." }
     ];
 
+    const SET_SIZE = 20;
+    const SETS = [];
+    for (let n = 0; n < BANK.length; n += SET_SIZE) {
+      SETS.push({
+        name: "Bộ " + (SETS.length + 1),
+        items: BANK.slice(n, n + SET_SIZE)
+      });
+    }
+
+    const packsEl = document.getElementById("packs");
+    const packListEl = document.getElementById("packList");
     const quizEl = document.getElementById("quiz");
     const doneEl = document.getElementById("done");
     const explainEl = document.getElementById("explain");
@@ -344,6 +423,7 @@
     const inputEl = document.getElementById("answer");
     const formEl = document.getElementById("form");
 
+    let currentSet = 0;
     let order = [];
     let i = 0;
     let score = 0;
@@ -383,14 +463,76 @@
       return answersOf(item).some((a) => got === a);
     }
 
-    function start() {
-      order = shuffle(BANK);
+    const STORE_KEY = "preIeltsPackStatus";
+
+    function loadStatus() {
+      try {
+        return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function setPackStatus(idx, status) {
+      const map = loadStatus();
+      if (status === "done" || map[idx] !== "done") {
+        map[idx] = status;
+        localStorage.setItem(STORE_KEY, JSON.stringify(map));
+      }
+    }
+
+    function markDone() {
+      const map = loadStatus();
+      map[currentSet] = "done";
+      localStorage.setItem(STORE_KEY, JSON.stringify(map));
+    }
+
+    function packMark(status) {
+      if (status === "done") {
+        return `<span class="mark ok" title="Đã học xong" aria-label="Đã học xong">✓</span>`;
+      }
+      if (status === "progress") {
+        return `<span class="mark busy" title="Đang học" aria-label="Đang học"></span>`;
+      }
+      return "";
+    }
+
+    function renderPackList() {
+      const map = loadStatus();
+      packListEl.innerHTML = "";
+      SETS.forEach((set, idx) => {
+        const status = map[idx];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pack" + (status === "done" ? " done" : status === "progress" ? " in-progress" : "");
+        btn.innerHTML =
+          `<span class="pack-top"><strong>${set.name}</strong>${packMark(status)}</span>` +
+          `<span class="n">${set.items.length} câu${status === "progress" ? " · Đang học" : status === "done" ? " · Đã xong" : ""}</span>`;
+        btn.addEventListener("click", () => start(idx));
+        packListEl.appendChild(btn);
+      });
+    }
+
+    function showPacks() {
+      renderPackList();
+      packsEl.hidden = false;
+      quizEl.hidden = true;
+      doneEl.hidden = true;
+    }
+
+    function start(setIndex) {
+      currentSet = setIndex;
+      setPackStatus(currentSet, "progress");
+      const set = SETS[currentSet];
+      order = shuffle(set.items);
       i = 0;
       score = 0;
       missed = 0;
       gotRight = [];
       leftWrong = [];
       icons = order.map(() => ICONS[Math.floor(Math.random() * ICONS.length)]);
+      document.getElementById("setTitle").textContent = set.name;
+      packsEl.hidden = true;
       quizEl.hidden = false;
       doneEl.hidden = true;
       render();
@@ -456,6 +598,7 @@
         leftWrong[i] = true;
       }
       if (i + 1 >= order.length) {
+        markDone();
         document.getElementById("bar").style.width = "100%";
         quizEl.hidden = true;
         doneEl.hidden = false;
@@ -497,8 +640,11 @@
       render();
     });
 
-    document.getElementById("retry").addEventListener("click", start);
-    start();
+    document.getElementById("retry").addEventListener("click", () => start(currentSet));
+    document.getElementById("chooseSet").addEventListener("click", showPacks);
+    document.getElementById("toPacks").addEventListener("click", showPacks);
+
+    showPacks();
   </script>
 </body>
 </html>
